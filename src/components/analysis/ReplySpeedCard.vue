@@ -20,8 +20,7 @@ const maxAvg = computed(() => Math.max(...top.value.map(d => d.avgMinutes), 1))
 
 function formatTime(minutes: number): string {
   if (minutes < 1) {
-    const secs = Math.round(minutes * 60)
-    return locale.value === 'ja' ? `${secs}秒` : locale.value === 'zh-TW' ? `${secs}秒` : `${secs}s`
+    return locale.value === 'ja' ? '1分未満' : locale.value === 'zh-TW' ? '<1分' : '<1m'
   }
   if (minutes < 60) {
     const m = Math.round(minutes)
