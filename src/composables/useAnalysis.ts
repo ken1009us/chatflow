@@ -138,15 +138,22 @@ function computeAnalysis(
   const daysDiff = Math.max(1, Math.ceil((dateRange.end.getTime() - dateRange.start.getTime()) / (1000 * 60 * 60 * 24)))
   const dailyAverage = totalMessages / daysDiff
 
-  // Activity by date
+  // Activity by date (fill all dates in range, 0 for days without messages)
   const dateCountMap = new Map<string, number>()
   for (const m of messages) {
     const key = m.timestamp.toISOString().slice(0, 10)
     dateCountMap.set(key, (dateCountMap.get(key) ?? 0) + 1)
   }
-  const activityByDate = Array.from(dateCountMap.entries())
-    .sort(([a], [b]) => a.localeCompare(b))
-    .map(([date, count]) => ({ date, count }))
+  const activityByDate: Array<{ date: string; count: number }> = []
+  const cursor = new Date(dateRange.start)
+  cursor.setHours(0, 0, 0, 0)
+  const endDate = new Date(dateRange.end)
+  endDate.setHours(0, 0, 0, 0)
+  while (cursor <= endDate) {
+    const key = cursor.toISOString().slice(0, 10)
+    activityByDate.push({ date: key, count: dateCountMap.get(key) ?? 0 })
+    cursor.setDate(cursor.getDate() + 1)
+  }
 
   // Peak hours heatmap: 7 days x 24 hours
   const activityByHourDay: number[][] = Array.from({ length: 7 }, () => Array(24).fill(0))
