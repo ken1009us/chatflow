@@ -46,11 +46,13 @@ const HEADER_RE = /^\[LINE\]/
 
 const TYPE_PATTERNS: Array<[RegExp, MessageType]> = [
   [/^\[写真\]$|^\[照片\]$|^\[Photo\]$|^\[画像\]$/i, 'image'],
-  [/^\[スタンプ\]$|^\[貼圖\]$|^\[Sticker\]$/i, 'sticker'],
+  [/^\[スタンプ\]|^\[貼圖\]|^\[Sticker\]/i, 'sticker'],
   [/^\[動画\]$|^\[影片\]$|^\[Video\]$/i, 'video'],
   [/^\[音声メッセージ\]$|^\[語音訊息\]$|^\[Audio\]$/i, 'audio'],
   [/^\[ファイル\]$|^\[檔案\]$|^\[File\]$/i, 'file'],
   [/☎|通話時間|通話|☎ 通話/i, 'call'],
+  // LINE emoji / sticker names in parentheses: (machiko), (celebrate)
+  [/^\([a-zA-Z0-9_ -]+\)$/, 'sticker'],
 ]
 
 function detectMessageType(content: string): MessageType {

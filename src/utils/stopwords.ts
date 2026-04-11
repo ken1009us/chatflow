@@ -148,6 +148,9 @@ const EN_STOP_WORDS = [
   // URLs and noise
   'https', 'http', 'www', 'com', 'org', 'net',
   'emoji', 'sticker', 'gif', 'photo', 'image', 'video',
+  'app', 'line', 'null', 'today', 'yes', 'yea', 'yeah', 'nah',
+  'okay', 'lol', 'lmao', 'omg', 'wow', 'haha', 'hahaha',
+  'watching', 'sorry', 'thanks', 'thank',
 ]
 
 // Chinese: common function words (Traditional + Simplified)
@@ -213,6 +216,8 @@ const ZH_STOP_WORDS = [
   '太好了', '沒問題', '没问题',
   '時間', '时间', '小時', '小时', '東西', '东西',
   '晚上', '早上', '下午',
+  '來自', '来自', '今年', '去年', '上面', '下面', '裡面', '里面',
+  '這種', '这种', '那種', '那种', '多少', '幾個', '几个',
   // Common verbs (too generic)
   '有', '沒', '没', '要', '會', '会', '能', '想', '看', '說', '说',
   '去', '來', '来', '做', '用', '吃', '喝', '買', '买', '賣', '卖',
