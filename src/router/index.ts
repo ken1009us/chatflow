@@ -28,6 +28,11 @@ const router = createRouter({
       name: 'shared',
       component: () => import('@/views/SharedAnalysis.vue'),
     },
+    {
+      path: '/s/:id',
+      name: 'shared-short',
+      component: () => import('@/views/SharedAnalysis.vue'),
+    },
   ],
 })
 

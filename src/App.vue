@@ -14,7 +14,7 @@ const settings = useSettingsStore()
 
 useTheme()
 
-const isShared = computed(() => route.path === '/shared')
+const isShared = computed(() => route.path === '/shared' || route.path.startsWith('/s/'))
 
 const navItems = [
   { path: '/', key: 'home' },

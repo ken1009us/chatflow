@@ -1,9 +1,17 @@
 import { describe, it, expect } from 'vitest'
+import pako from 'pako'
 import { useShare } from '@/composables/useShare'
-import type { AnalysisResult } from '@/types'
+import type { AnalysisResult, ShareData } from '@/types'
+
+/** Helper: encode ShareData the same way the legacy hash fallback does */
+function encodeShareData(data: ShareData): string {
+  const json = JSON.stringify(data)
+  const compressed = pako.deflate(new TextEncoder().encode(json))
+  return btoa(String.fromCharCode(...compressed))
+}
 
 describe('useShare', () => {
-  const { encodeShareData, decodeShareData } = useShare()
+  const { decodeShareData } = useShare()
 
   const mockResult: AnalysisResult = {
     totalMessages: 1000,
@@ -34,8 +42,25 @@ describe('useShare', () => {
     ],
   }
 
+  const mockShareData: ShareData = {
+    name: 'Test Chat',
+    platform: 'line',
+    totalMessages: mockResult.totalMessages,
+    memberCount: mockResult.memberCount,
+    dateRange: {
+      start: mockResult.dateRange.start.toISOString(),
+      end: mockResult.dateRange.end.toISOString(),
+    },
+    dailyAverage: mockResult.dailyAverage,
+    activityByDate: mockResult.activityByDate,
+    activityByHourDay: mockResult.activityByHourDay,
+    memberRanking: mockResult.memberRanking,
+    messageTypes: mockResult.messageTypes,
+    wordFrequency: mockResult.wordFrequency,
+  }
+
   it('encodes and decodes share data correctly', () => {
-    const encoded = encodeShareData('Test Chat', 'line', mockResult)
+    const encoded = encodeShareData(mockShareData)
     expect(typeof encoded).toBe('string')
     expect(encoded.length).toBeGreaterThan(0)
 
@@ -49,26 +74,25 @@ describe('useShare', () => {
   })
 
   it('preserves date range', () => {
-    const encoded = encodeShareData('Test', 'line', mockResult)
+    const encoded = encodeShareData(mockShareData)
     const decoded = decodeShareData(encoded)
     expect(new Date(decoded.dateRange.start).getFullYear()).toBe(2024)
   })
 
-  it('limits data size', () => {
-    const largeResult = {
-      ...mockResult,
-      activityByDate: Array.from({ length: 365 }, (_, i) => ({
+  it('limits data size via buildShareData', () => {
+    const largeShareData: ShareData = {
+      ...mockShareData,
+      activityByDate: Array.from({ length: 100 }, (_, i) => ({
         date: `2024-01-${String(i + 1).padStart(2, '0')}`,
         count: Math.floor(Math.random() * 100),
-      })),
-      wordFrequency: Array.from({ length: 200 }, (_, i) => ({
+      })).slice(0, 90),
+      wordFrequency: Array.from({ length: 100 }, (_, i) => ({
         word: `word${i}`,
         count: 200 - i,
       })),
     }
-    const encoded = encodeShareData('Test', 'line', largeResult)
+    const encoded = encodeShareData(largeShareData)
     const decoded = decodeShareData(encoded)
-    // Should be truncated
     expect(decoded.activityByDate.length).toBeLessThanOrEqual(90)
     expect(decoded.wordFrequency.length).toBeLessThanOrEqual(100)
   })

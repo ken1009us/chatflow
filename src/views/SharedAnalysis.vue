@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { useShare } from '@/composables/useShare'
 import type { ShareData } from '@/types'
-import BaseButton from '@/components/common/BaseButton.vue'
+import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import StatsSummary from '@/components/analysis/StatsSummary.vue'
 import ActivityTrendChart from '@/components/charts/ActivityTrendChart.vue'
 import PeakHoursHeatmap from '@/components/charts/PeakHoursHeatmap.vue'
@@ -23,12 +23,26 @@ import MediaChampionCard from '@/components/analysis/MediaChampionCard.vue'
 
 const { t } = useI18n()
 const router = useRouter()
-const { decodeShareData } = useShare()
+const route = useRoute()
+const { decodeShareData, fetchShareData } = useShare()
 
 const data = ref<ShareData | null>(null)
+const loading = ref(false)
 const invalid = ref(false)
 
-onMounted(() => {
+onMounted(async () => {
+  const id = route.params.id as string | undefined
+
+  if (id) {
+    // Short URL: /s/{id} — fetch from API
+    loading.value = true
+    data.value = await fetchShareData(id)
+    loading.value = false
+    if (!data.value) invalid.value = true
+    return
+  }
+
+  // Legacy hash URL: /shared#{encoded}
   const hash = window.location.hash.slice(1)
   if (!hash) {
     router.replace('/')
@@ -44,14 +58,18 @@ onMounted(() => {
 
 <template>
   <div class="mx-auto max-w-6xl px-4 py-8">
-    <!-- Invalid hash -->
-    <div v-if="invalid" class="py-20 text-center">
-      <p class="mb-4 text-sm text-gray-500 dark:text-gray-400">{{ t('shared.invalid') }}</p>
-      <BaseButton @click="router.push('/')">{{ t('shared.openApp') }}</BaseButton>
+    <!-- Loading -->
+    <div v-if="loading" class="flex items-center justify-center py-20">
+      <LoadingSpinner size="lg" />
+    </div>
+
+    <!-- Invalid -->
+    <div v-else-if="invalid" class="py-20 text-center">
+      <p class="text-sm text-gray-500 dark:text-gray-400">{{ t('shared.invalid') }}</p>
     </div>
 
     <!-- Share data display -->
-    <template v-if="data">
+    <template v-else-if="data">
       <div class="mb-4 rounded-lg border border-gray-200 bg-gray-50 p-3 text-center text-xs text-gray-500 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400">
         {{ t('shared.notice') }}
       </div>

@@ -19,8 +19,8 @@ export interface ShareExtras {
 }
 
 export function useShare() {
-  function encodeShareData(name: string, platform: string, result: AnalysisResult, extras?: ShareExtras): string {
-    const shareData: ShareData = {
+  function buildShareData(name: string, platform: string, result: AnalysisResult, extras?: ShareExtras): ShareData {
+    return {
       name,
       platform: platform as ShareData['platform'],
       totalMessages: result.totalMessages,
@@ -45,12 +45,9 @@ export function useShare() {
       mediaChampion: extras?.mediaChampion?.slice(0, 10),
       monthlyActivity: extras?.monthlyActivity,
     }
-
-    const json = JSON.stringify(shareData)
-    const compressed = pako.deflate(new TextEncoder().encode(json))
-    return btoa(String.fromCharCode(...compressed))
   }
 
+  /** Legacy: decode hash-based share URL */
   function decodeShareData(encoded: string): ShareData {
     const binary = atob(encoded)
     const bytes = new Uint8Array(binary.length)
@@ -62,9 +59,43 @@ export function useShare() {
     return JSON.parse(json)
   }
 
+  /** Fetch share data by short ID from API */
+  async function fetchShareData(id: string): Promise<ShareData | null> {
+    try {
+      const response = await fetch(`/api/share/${id}`)
+      if (!response.ok) return null
+      return await response.json()
+    } catch {
+      return null
+    }
+  }
+
+  /** Create a short share URL via API, fallback to hash URL for local dev */
   async function copyShareUrl(name: string, platform: string, result: AnalysisResult, extras?: ShareExtras): Promise<boolean> {
     try {
-      const encoded = encodeShareData(name, platform, result, extras)
+      const shareData = buildShareData(name, platform, result, extras)
+
+      // Try API (production)
+      try {
+        const response = await fetch('/api/share', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(shareData),
+        })
+        if (response.ok) {
+          const { id } = await response.json()
+          const url = `${window.location.origin}/s/${id}`
+          await navigator.clipboard.writeText(url)
+          return true
+        }
+      } catch {
+        // API not available (local dev), fall through to hash fallback
+      }
+
+      // Fallback: hash-based URL
+      const json = JSON.stringify(shareData)
+      const compressed = pako.deflate(new TextEncoder().encode(json))
+      const encoded = btoa(String.fromCharCode(...compressed))
       const url = `${window.location.origin}/shared#${encoded}`
       await navigator.clipboard.writeText(url)
       return true
@@ -73,5 +104,5 @@ export function useShare() {
     }
   }
 
-  return { encodeShareData, decodeShareData, copyShareUrl }
+  return { decodeShareData, fetchShareData, copyShareUrl }
 }
