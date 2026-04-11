@@ -31,7 +31,7 @@ export function useShare() {
         end: result.dateRange.end.toISOString(),
       },
       dailyAverage: result.dailyAverage,
-      activityByDate: result.activityByDate.slice(-90),
+      activityByDate: result.activityByDate,
       activityByHourDay: result.activityByHourDay,
       memberRanking: result.memberRanking.slice(0, 10),
       messageTypes: result.messageTypes,
