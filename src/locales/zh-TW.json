@@ -1,0 +1,106 @@
+{
+  "app": {
+    "title": "ChatFlow",
+    "subtitle": "聊天分析工具"
+  },
+  "nav": {
+    "home": "首頁",
+    "upload": "匯入",
+    "analysis": "分析",
+    "settings": "設定"
+  },
+  "home": {
+    "hero": "更深入地理解\n你的聊天記錄。",
+    "description": "匯入 LINE 聊天記錄，視覺化對話模式與趨勢。",
+    "import": "匯入聊天記錄",
+    "viewShared": "查看分享的分析",
+    "features": {
+      "analysis": "詳細分析",
+      "analysisDesc": "訊息頻率、活躍時段、成員統計等",
+      "visualization": "視覺化",
+      "visualizationDesc": "文字雲、熱力圖、圖表呈現對話內容",
+      "privacy": "隱私優先",
+      "privacyDesc": "所有資料存在瀏覽器中，不會傳送至伺服器"
+    }
+  },
+  "upload": {
+    "title": "匯入聊天記錄",
+    "dropzone": "拖放檔案至此",
+    "browse": "或選擇檔案",
+    "hint": "支援 LINE 聊天記錄 (.txt)",
+    "parsing": "解析中...",
+    "success": "匯入成功",
+    "error": "解析錯誤",
+    "history": "已匯入的聊天",
+    "noHistory": "尚未匯入任何聊天記錄",
+    "delete": "刪除",
+    "analyze": "開始分析",
+    "messageCount": "{count} 則訊息",
+    "memberCount": "{count} 位成員"
+  },
+  "analysis": {
+    "title": "分析",
+    "noData": "尚無資料，請先匯入聊天記錄。",
+    "summary": {
+      "totalMessages": "訊息數",
+      "members": "成員數",
+      "dateRange": "期間",
+      "dailyAvg": "日均"
+    },
+    "charts": {
+      "activityTrend": "活動趨勢",
+      "peakHours": "尖峰時段",
+      "memberRanking": "成員排行",
+      "wordCloud": "高頻詞彙",
+      "messageTypes": "訊息類型",
+      "sentiment": "情緒趨勢"
+    },
+    "filter": {
+      "all": "全部",
+      "week": "近一週",
+      "month": "近一月",
+      "quarter": "近三月",
+      "year": "近一年",
+      "custom": "自訂",
+      "startDate": "開始日期",
+      "endDate": "結束日期",
+      "apply": "套用"
+    },
+    "period": {
+      "daily": "按日",
+      "weekly": "按週",
+      "monthly": "按月"
+    },
+    "share": "分享分析"
+  },
+  "settings": {
+    "title": "設定",
+    "language": "語言",
+    "theme": "主題",
+    "dark": "深色",
+    "light": "淺色",
+    "dataManagement": "資料管理",
+    "deleteData": "刪除所有資料",
+    "deleteConfirm": "確定要刪除所有資料嗎？此操作無法復原。",
+    "appInfo": "應用程式資訊",
+    "version": "版本"
+  },
+  "shared": {
+    "title": "分享的分析",
+    "notice": "這是分享的分析結果，不包含原始聊天記錄。",
+    "invalid": "無效的分享連結",
+    "openApp": "開啟 ChatFlow",
+    "pasteHint": "貼上分享連結以查看分析結果",
+    "pastePlaceholder": "貼上 ChatFlow 分享連結...",
+    "view": "查看"
+  },
+  "common": {
+    "loading": "載入中...",
+    "error": "發生錯誤",
+    "close": "關閉",
+    "cancel": "取消",
+    "confirm": "確認",
+    "copy": "複製",
+    "copied": "已複製"
+  }
+}

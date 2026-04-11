@@ -1,0 +1,18 @@
+/*
+ * ChatFlow — Japanese Minimalist Design System
+ *
+ * Light: warm stone backgrounds, subtle borders
+ * Dark (default): deep neutral backgrounds, muted borders
+ */
+
+@theme {
+  --color-surface: #fafaf9;
+  --color-surface-card: #ffffff;
+  --color-surface-hover: #f5f5f4;
+  --color-border-subtle: #e5e5e5;
+  --color-text-primary: #292524;
+  --color-text-secondary: #78716c;
+  --color-text-accent: #525252;
+  --color-accent: #a3a3a3;
+  --color-accent-hover: #737373;
+}

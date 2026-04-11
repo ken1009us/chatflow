@@ -1,0 +1,106 @@
+{
+  "app": {
+    "title": "ChatFlow",
+    "subtitle": "Chat Analytics Tool"
+  },
+  "nav": {
+    "home": "Home",
+    "upload": "Import",
+    "analysis": "Analysis",
+    "settings": "Settings"
+  },
+  "home": {
+    "hero": "Understand your\nchat history deeply.",
+    "description": "Import your LINE chat history to visualize conversation patterns and trends.",
+    "import": "Import Chat",
+    "viewShared": "View Shared Analysis",
+    "features": {
+      "analysis": "Detailed Analysis",
+      "analysisDesc": "Message frequency, active hours, member statistics and more",
+      "visualization": "Visualization",
+      "visualizationDesc": "Word clouds, heatmaps, and charts to visualize conversations",
+      "privacy": "Privacy First",
+      "privacyDesc": "All data stays in your browser. Nothing sent to any server"
+    }
+  },
+  "upload": {
+    "title": "Import Chat",
+    "dropzone": "Drop file here",
+    "browse": "or browse files",
+    "hint": "Supports LINE chat history (.txt)",
+    "parsing": "Parsing...",
+    "success": "Import complete",
+    "error": "Parse error",
+    "history": "Imported Chats",
+    "noHistory": "No chats imported yet",
+    "delete": "Delete",
+    "analyze": "Analyze",
+    "messageCount": "{count} messages",
+    "memberCount": "{count} members"
+  },
+  "analysis": {
+    "title": "Analysis",
+    "noData": "No data yet. Please import a chat first.",
+    "summary": {
+      "totalMessages": "Messages",
+      "members": "Members",
+      "dateRange": "Period",
+      "dailyAvg": "Daily Avg"
+    },
+    "charts": {
+      "activityTrend": "Activity Trend",
+      "peakHours": "Peak Hours",
+      "memberRanking": "Member Ranking",
+      "wordCloud": "Word Cloud",
+      "messageTypes": "Message Types",
+      "sentiment": "Sentiment Trend"
+    },
+    "filter": {
+      "all": "All",
+      "week": "Last Week",
+      "month": "Last Month",
+      "quarter": "Last 3 Months",
+      "year": "Last Year",
+      "custom": "Custom",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "apply": "Apply"
+    },
+    "period": {
+      "daily": "Daily",
+      "weekly": "Weekly",
+      "monthly": "Monthly"
+    },
+    "share": "Share Analysis"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "theme": "Theme",
+    "dark": "Dark",
+    "light": "Light",
+    "dataManagement": "Data Management",
+    "deleteData": "Delete All Data",
+    "deleteConfirm": "Are you sure you want to delete all data? This action cannot be undone.",
+    "appInfo": "App Info",
+    "version": "Version"
+  },
+  "shared": {
+    "title": "Shared Analysis",
+    "notice": "This is a shared analysis. Original chat history is not included.",
+    "invalid": "Invalid share link",
+    "openApp": "Open ChatFlow",
+    "pasteHint": "Paste a share link to view analysis results",
+    "pastePlaceholder": "Paste ChatFlow share link...",
+    "view": "View"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "close": "Close",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "copy": "Copy",
+    "copied": "Copied"
+  }
+}

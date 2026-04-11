@@ -1,0 +1,106 @@
+{
+  "app": {
+    "title": "ChatFlow",
+    "subtitle": "チャット分析ツール"
+  },
+  "nav": {
+    "home": "ホーム",
+    "upload": "インポート",
+    "analysis": "分析",
+    "settings": "設定"
+  },
+  "home": {
+    "hero": "チャット履歴を、\nもっと深く理解する。",
+    "description": "LINE のチャット履歴をインポートして、会話のパターンや傾向を視覚化します。",
+    "import": "チャットをインポート",
+    "viewShared": "共有分析を見る",
+    "features": {
+      "analysis": "詳細分析",
+      "analysisDesc": "メッセージ頻度、アクティブ時間帯、メンバー統計など",
+      "visualization": "視覚化",
+      "visualizationDesc": "ワードクラウド、ヒートマップ、チャートで会話を可視化",
+      "privacy": "プライバシー重視",
+      "privacyDesc": "すべてのデータはブラウザ内に保存。サーバーへの送信なし"
+    }
+  },
+  "upload": {
+    "title": "チャットをインポート",
+    "dropzone": "ファイルをドラッグ＆ドロップ",
+    "browse": "またはファイルを選択",
+    "hint": "LINE のチャット履歴 (.txt) に対応",
+    "parsing": "解析中...",
+    "success": "インポート完了",
+    "error": "解析エラー",
+    "history": "インポート済み",
+    "noHistory": "インポート済みのチャットはありません",
+    "delete": "削除",
+    "analyze": "分析する",
+    "messageCount": "{count} 件のメッセージ",
+    "memberCount": "{count} 人のメンバー"
+  },
+  "analysis": {
+    "title": "分析",
+    "noData": "まだデータがありません。チャットをインポートしてください。",
+    "summary": {
+      "totalMessages": "メッセージ数",
+      "members": "メンバー数",
+      "dateRange": "期間",
+      "dailyAvg": "日平均"
+    },
+    "charts": {
+      "activityTrend": "アクティビティ推移",
+      "peakHours": "ピーク時間帯",
+      "memberRanking": "メンバーランキング",
+      "wordCloud": "頻出ワード",
+      "messageTypes": "メッセージ種類",
+      "sentiment": "感情推移"
+    },
+    "filter": {
+      "all": "全期間",
+      "week": "直近1週間",
+      "month": "直近1ヶ月",
+      "quarter": "直近3ヶ月",
+      "year": "直近1年",
+      "custom": "カスタム",
+      "startDate": "開始日",
+      "endDate": "終了日",
+      "apply": "適用"
+    },
+    "period": {
+      "daily": "日別",
+      "weekly": "週別",
+      "monthly": "月別"
+    },
+    "share": "分析を共有"
+  },
+  "settings": {
+    "title": "設定",
+    "language": "言語",
+    "theme": "テーマ",
+    "dark": "ダーク",
+    "light": "ライト",
+    "dataManagement": "データ管理",
+    "deleteData": "すべてのデータを削除",
+    "deleteConfirm": "本当にすべてのデータを削除しますか？この操作は取り消せません。",
+    "appInfo": "アプリ情報",
+    "version": "バージョン"
+  },
+  "shared": {
+    "title": "共有された分析",
+    "notice": "これは共有された分析結果です。元のチャット履歴は含まれていません。",
+    "invalid": "無効な共有リンクです",
+    "openApp": "ChatFlow を開く",
+    "pasteHint": "共有リンクを貼り付けて分析結果を表示",
+    "pastePlaceholder": "ChatFlow の共有リンクを貼り付け...",
+    "view": "表示"
+  },
+  "common": {
+    "loading": "読み込み中...",
+    "error": "エラーが発生しました",
+    "close": "閉じる",
+    "cancel": "キャンセル",
+    "confirm": "確認",
+    "copy": "コピー",
+    "copied": "コピーしました"
+  }
+}
