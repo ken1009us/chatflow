@@ -28,12 +28,13 @@ const navItems = [
     <!-- Header -->
     <header class="sticky top-0 z-40 border-b border-gray-200 bg-white/80 backdrop-blur dark:border-gray-800 dark:bg-neutral-950/80">
       <div class="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
-        <button
+        <span
           class="text-lg font-light tracking-wide text-gray-800 dark:text-gray-100"
-          @click="router.push('/')"
+          :class="!isShared ? 'cursor-pointer' : ''"
+          @click="!isShared && router.push('/')"
         >
           ChatFlow
-        </button>
+        </span>
 
         <nav v-if="!isShared" class="hidden items-center gap-6 sm:flex">
           <router-link
@@ -51,7 +52,7 @@ const navItems = [
           </router-link>
         </nav>
 
-        <div v-if="!isShared" class="flex items-center gap-1">
+        <div class="flex items-center gap-1">
           <LanguageSwitchCompact />
           <ThemeToggle />
         </div>

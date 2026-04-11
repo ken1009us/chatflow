@@ -5,6 +5,7 @@ import type {
   ReplySpeedEntry, NightOwlEntry, CompatibilityPair,
   MediaChampionEntry, MonthlyActivity,
 } from '@/composables/useAnalysis'
+import { useSettingsStore } from '@/stores/settings'
 
 export interface ShareExtras {
   memberBreakdown?: MemberBreakdown[]
@@ -62,7 +63,7 @@ export function useShare() {
   /** Fetch share data by short ID from API */
   async function fetchShareData(id: string): Promise<ShareData | null> {
     try {
-      const response = await fetch(`/api/share/${id}`)
+      const response = await fetch(`/api/share?id=${encodeURIComponent(id)}`)
       if (!response.ok) return null
       return await response.json()
     } catch {
@@ -75,6 +76,9 @@ export function useShare() {
     try {
       const shareData = buildShareData(name, platform, result, extras)
 
+      const settings = useSettingsStore()
+      const lang = settings.locale
+
       // Try API (production)
       try {
         const response = await fetch('/api/share', {
@@ -84,7 +88,7 @@ export function useShare() {
         })
         if (response.ok) {
           const { id } = await response.json()
-          const url = `${window.location.origin}/s/${id}`
+          const url = `${window.location.origin}/s/${id}?lang=${lang}`
           await navigator.clipboard.writeText(url)
           return true
         }
@@ -96,7 +100,7 @@ export function useShare() {
       const json = JSON.stringify(shareData)
       const compressed = pako.deflate(new TextEncoder().encode(json))
       const encoded = btoa(String.fromCharCode(...compressed))
-      const url = `${window.location.origin}/shared#${encoded}`
+      const url = `${window.location.origin}/shared?lang=${lang}#${encoded}`
       await navigator.clipboard.writeText(url)
       return true
     } catch {

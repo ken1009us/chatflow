@@ -21,7 +21,7 @@ import NightOwlCard from '@/components/analysis/NightOwlCard.vue'
 import CompatibilityCard from '@/components/analysis/CompatibilityCard.vue'
 import MediaChampionCard from '@/components/analysis/MediaChampionCard.vue'
 
-const { t } = useI18n()
+const { t, locale: i18nLocale } = useI18n()
 const router = useRouter()
 const route = useRoute()
 const { decodeShareData, fetchShareData } = useShare()
@@ -30,7 +30,14 @@ const data = ref<ShareData | null>(null)
 const loading = ref(false)
 const invalid = ref(false)
 
+const SUPPORTED_LOCALES = ['ja', 'zh-TW', 'en']
+
 onMounted(async () => {
+  const lang = route.query.lang as string | undefined
+  if (lang && SUPPORTED_LOCALES.includes(lang)) {
+    i18nLocale.value = lang
+  }
+
   const id = route.params.id as string | undefined
 
   if (id) {
