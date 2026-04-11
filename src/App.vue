@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter, useRoute } from 'vue-router'
 import { useTheme } from '@/composables/useTheme'
@@ -12,6 +13,8 @@ const route = useRoute()
 const settings = useSettingsStore()
 
 useTheme()
+
+const isShared = computed(() => route.path === '/shared')
 
 const navItems = [
   { path: '/', key: 'home' },
@@ -32,7 +35,7 @@ const navItems = [
           ChatFlow
         </button>
 
-        <nav class="hidden items-center gap-6 sm:flex">
+        <nav v-if="!isShared" class="hidden items-center gap-6 sm:flex">
           <router-link
             v-for="item in navItems"
             :key="item.key"
@@ -48,7 +51,7 @@ const navItems = [
           </router-link>
         </nav>
 
-        <div class="flex items-center gap-1">
+        <div v-if="!isShared" class="flex items-center gap-1">
           <LanguageSwitchCompact />
           <ThemeToggle />
         </div>
@@ -56,7 +59,7 @@ const navItems = [
     </header>
 
     <!-- Mobile nav -->
-    <nav class="fixed bottom-0 left-0 right-0 z-40 flex justify-around border-t border-gray-200 bg-white py-2 sm:hidden dark:border-gray-800 dark:bg-neutral-950">
+    <nav v-if="!isShared" class="fixed bottom-0 left-0 right-0 z-40 flex justify-around border-t border-gray-200 bg-white py-2 sm:hidden dark:border-gray-800 dark:bg-neutral-950">
       <router-link
         v-for="item in navItems"
         :key="item.key"

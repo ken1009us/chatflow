@@ -27,7 +27,7 @@ const option = computed(() => ({
     borderColor: isDark.value ? '#333' : '#e5e5e5',
     textStyle: { color: isDark.value ? '#e5e5e5' : '#292524', fontSize: 12 },
   },
-  grid: { left: 40, right: 16, top: 12, bottom: 56 },
+  grid: { left: 40, right: 24, top: 12, bottom: 56 },
   xAxis: {
     type: 'category',
     data: props.data.map((d) => d.date),

@@ -43,7 +43,7 @@ const option = computed(() => ({
     textStyle: { color: isDark.value ? '#e5e5e5' : '#292524', fontSize: 12 },
     formatter: (params: any) => `${days[params.value[1]]} ${params.value[0]}:00 — ${params.value[2]}`,
   },
-  grid: { left: 40, right: 8, top: 8, bottom: 24 },
+  grid: { left: 40, right: 16, top: 8, bottom: 24 },
   xAxis: {
     type: 'category',
     data: hours,

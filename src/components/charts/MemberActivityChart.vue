@@ -52,7 +52,7 @@ const option = computed(() => ({
     itemWidth: 8,
     itemHeight: 8,
   },
-  grid: { left: 80, right: 16, top: 4, bottom: 48 },
+  grid: { left: 80, right: 40, top: 8, bottom: 48 },
   xAxis: {
     type: 'value',
     splitLine: { lineStyle: { color: isDark.value ? '#1a1a1a' : '#f5f5f4' } },
