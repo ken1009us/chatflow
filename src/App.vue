@@ -60,13 +60,13 @@ const navItems = [
     </header>
 
     <!-- Mobile nav -->
-    <nav v-if="!isShared" class="fixed bottom-0 left-0 right-0 z-40 flex justify-around border-t border-gray-200 bg-white py-2 sm:hidden dark:border-gray-800 dark:bg-neutral-950">
+    <nav v-if="!isShared" class="fixed bottom-0 left-0 right-0 z-50 flex justify-around border-t border-gray-200 bg-white pb-[env(safe-area-inset-bottom)] sm:hidden dark:border-gray-800 dark:bg-neutral-950">
       <router-link
         v-for="item in navItems"
         :key="item.key"
         :to="item.path"
         :class="[
-          'px-3 py-1 text-xs',
+          'flex min-h-[44px] flex-1 items-center justify-center text-xs',
           route.path === item.path
             ? 'text-gray-800 dark:text-white'
             : 'text-gray-400 dark:text-gray-400',
@@ -77,7 +77,7 @@ const navItems = [
     </nav>
 
     <!-- Main content -->
-    <main class="pb-16 sm:pb-0">
+    <main class="pb-[calc(44px+env(safe-area-inset-bottom))] sm:pb-0">
       <router-view />
     </main>
   </div>
