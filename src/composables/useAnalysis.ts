@@ -502,7 +502,11 @@ function computeMonthlyActivity(messages: Message[]): MonthlyActivity[] {
 const HIRAGANA_RE = /^[\u3040-\u309f]+$/
 const KATAKANA_RE = /^[\u30a0-\u30ff]+$/
 
+const LATIN_RE = /^[a-zA-Z]+$/
+const NUMBER_RE = /^\d+$/
+
 function tokenize(text: string, memberNames?: string[]): string[] {
+  if (!text) return []
   const cleaned = text.replace(/https?:\/\/\S+/g, '')
   const tokens: string[] = []
 
@@ -512,7 +516,8 @@ function tokenize(text: string, memberNames?: string[]): string[] {
   if (memberNames) {
     for (const name of memberNames) {
       memberNamesLower.add(name.toLowerCase())
-      const latinParts = name.toLowerCase().match(/[a-z]{3,}/g)
+      // Also add individual Latin parts (2+ chars to catch short names like "CY")
+      const latinParts = name.toLowerCase().match(/[a-z]{2,}/g)
       if (latinParts) {
         for (const p of latinParts) memberNamesLower.add(p)
       }
@@ -549,7 +554,12 @@ function tokenize(text: string, memberNames?: string[]): string[] {
     const segmenter = new Intl.Segmenter(lang, { granularity: 'word' })
     for (const { segment, isWordLike } of segmenter.segment(cjkText)) {
       if (!isWordLike) continue
-      if (STOP_WORDS.has(segment)) continue
+      // Skip Latin segments — already handled above
+      if (LATIN_RE.test(segment)) continue
+      // Skip pure numbers
+      if (NUMBER_RE.test(segment)) continue
+      // Check stopwords (also check lowercase for mixed-case)
+      if (STOP_WORDS.has(segment) || STOP_WORDS.has(segment.toLowerCase())) continue
       // Pure hiragana: require 3+ chars (1-2 char hiragana are almost always particles)
       if (HIRAGANA_RE.test(segment) && segment.length < 3) continue
       // Katakana: require 2+ chars
