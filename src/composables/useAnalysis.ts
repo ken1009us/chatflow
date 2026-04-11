@@ -1,6 +1,7 @@
 import { ref } from 'vue'
 import type { AnalysisResult, Message } from '@/types'
 import { getAllMessagesForAnalysis, getMembers } from '@/db/queries'
+import { STOP_WORDS } from '@/utils/stopwords'
 
 export interface ExtraStats {
   mostActiveDay: { date: string; count: number }
@@ -490,22 +491,9 @@ function computeMonthlyActivity(messages: Message[]): MonthlyActivity[] {
 
 // --- Tokenizer ---
 
-const STOP_WORDS = new Set([
-  // CJK particles and common fillers
-  'の', 'は', 'が', 'を', 'に', 'で', 'と', 'も', 'な', 'よ', 'ね', 'か',
-  'だ', 'です', 'ます', 'する', 'した', 'して', 'ない', 'ある', 'いる',
-  '的', '了', '是', '在', '不', '我', '你', '他', '她', '它', '們', '這', '那',
-  '就是', '不是', '沒有', '可以', '什麼', '這個', '那個', '一個', '還是',
-  '知道', '覺得', '應該', '怎麼', '現在', '這樣', '真的', '不會', '你們',
-  '可能', '所以', '比較', '也是', '也不', '是不', '很多', '一樣', '好像',
-  '時候', '到底', '今天', '一下',
-  // English
-  'the', 'a', 'an', 'is', 'are', 'was', 'were', 'be', 'been', 'to', 'of',
-  'and', 'or', 'in', 'on', 'at', 'for', 'with', 'it', 'this', 'that',
-  'i', 'you', 'he', 'she', 'we', 'they', 'me', 'my', 'your', 'do', 'not',
-  // URLs and common noise
-  'https', 'http', 'www', 'com', 'org', 'net', 'tw', 'jp',
-])
+// Pure hiragana check: most 1-2 char pure-hiragana segments are particles/endings
+const HIRAGANA_RE = /^[\u3040-\u309f]+$/
+const KATAKANA_RE = /^[\u30a0-\u30ff]+$/
 
 function tokenize(text: string, memberNames?: string[]): string[] {
   const cleaned = text.replace(/https?:\/\/\S+/g, '')
@@ -553,9 +541,15 @@ function tokenize(text: string, memberNames?: string[]): string[] {
     const lang = hasJa ? 'ja' : 'zh-TW'
     const segmenter = new Intl.Segmenter(lang, { granularity: 'word' })
     for (const { segment, isWordLike } of segmenter.segment(cjkText)) {
-      if (isWordLike && segment.length >= 2 && !STOP_WORDS.has(segment)) {
-        tokens.push(segment)
-      }
+      if (!isWordLike) continue
+      if (STOP_WORDS.has(segment)) continue
+      // Pure hiragana: require 3+ chars (1-2 char hiragana are almost always particles)
+      if (HIRAGANA_RE.test(segment) && segment.length < 3) continue
+      // Katakana: require 2+ chars
+      if (KATAKANA_RE.test(segment) && segment.length < 2) continue
+      // Mixed/kanji: require 2+ chars
+      if (segment.length < 2) continue
+      tokens.push(segment)
     }
   } else {
     // Fallback: CJK bigrams from remaining contiguous segments
