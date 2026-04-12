@@ -599,9 +599,11 @@ export function tokenize(text: string, memberNames?: string[]): string[] {
       if (HIRAGANA_RE.test(segment) && segment.length < 3) continue
       // Katakana: require 2+ chars
       if (KATAKANA_RE.test(segment) && segment.length < 2) continue
-      // Chinese: allow single CJK chars (stopwords already filtered above)
-      // Japanese: require 2+ chars for all (single kanji are often compound fragments)
-      if (segment.length < 2 && (hasJa || !/[\u3000-\u9fff\uf900-\ufaff]/.test(segment))) continue
+      // Require 2+ chars for all remaining segments (single CJK chars are
+      // mostly compound fragments without POS tagging to confirm otherwise)
+      if (segment.length < 2) continue
+      // Skip Bopomofo (注音符號) — used as chat slang in Taiwanese chats
+      if (/^[\u3100-\u312f\u31a0-\u31bf]+$/.test(segment)) continue
       tokens.push(segment)
     }
   } else {
