@@ -186,6 +186,8 @@ function computeAnalysis(
   const wordCounts = new Map<string, number>()
   for (const m of messages) {
     if (m.type !== 'text') continue
+    // Skip single English-word messages (likely LINE sticker/emoji names)
+    if (/^[a-zA-Z_]+$/.test(m.content.trim())) continue
     const words = tokenize(m.content, memberNamesList)
     for (const word of words) {
       wordCounts.set(word, (wordCounts.get(word) ?? 0) + 1)
@@ -336,6 +338,8 @@ function computeCatchphrases(
 
   for (const m of messages) {
     if (m.type !== 'text') continue
+    // Skip single English-word messages (likely LINE sticker/emoji names)
+    if (/^[a-zA-Z_]+$/.test(m.content.trim())) continue
     if (!memberWords.has(m.senderId)) {
       memberWords.set(m.senderId, new Map())
     }
