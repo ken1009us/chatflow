@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import BaseCard from '@/components/common/BaseCard.vue'
 import { CHART_COLORS } from '@/utils/colors'
+import { STOP_WORDS } from '@/utils/stopwords'
 import type { MemberCatchphrases } from '@/composables/useAnalysis'
 
 const { locale } = useI18n()
@@ -15,7 +16,16 @@ const title = computed(() =>
   locale.value === 'ja' ? '口癖ランキング' : locale.value === 'zh-TW' ? '口頭禪' : 'Catchphrases'
 )
 
-const top = computed(() => props.data.slice(0, 10))
+const STICKER_RE = /^[a-zA-Z_]+$/
+
+const top = computed(() =>
+  props.data.slice(0, 10).map(member => ({
+    ...member,
+    phrases: member.phrases
+      .filter(p => !STICKER_RE.test(p.word) && !STOP_WORDS.has(p.word) && !STOP_WORDS.has(p.word.toLowerCase()))
+      .slice(0, 5),
+  })).filter(member => member.phrases.length > 0)
+)
 </script>
 
 <template>

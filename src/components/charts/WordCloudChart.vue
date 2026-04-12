@@ -9,15 +9,22 @@ import { TooltipComponent } from 'echarts/components'
 import 'echarts-wordcloud'
 import BaseCard from '@/components/common/BaseCard.vue'
 import { WORD_CLOUD_COLORS } from '@/utils/colors'
+import { STOP_WORDS } from '@/utils/stopwords'
 
 use([CanvasRenderer, TooltipComponent])
 
 const { t } = useI18n()
 const { isDark } = useTheme()
 
+const STICKER_RE = /^[a-zA-Z_]+$/
+
 const props = defineProps<{
   data: Array<{ word: string; count: number }>
 }>()
+
+const filteredData = computed(() =>
+  props.data.filter(d => !STICKER_RE.test(d.word) && !STOP_WORDS.has(d.word) && !STOP_WORDS.has(d.word.toLowerCase()))
+)
 
 const option = computed(() => ({
   backgroundColor: 'transparent',
@@ -52,7 +59,7 @@ const option = computed(() => ({
           shadowColor: 'rgba(0,0,0,0.3)',
         },
       },
-      data: props.data.slice(0, 80).map((d) => ({
+      data: filteredData.value.slice(0, 80).map((d) => ({
         name: d.word,
         value: d.count,
       })),
