@@ -599,9 +599,9 @@ export function tokenize(text: string, memberNames?: string[]): string[] {
       if (HIRAGANA_RE.test(segment) && segment.length < 3) continue
       // Katakana: require 2+ chars
       if (KATAKANA_RE.test(segment) && segment.length < 2) continue
-      // CJK characters: allow single chars (stopwords already filtered above)
-      // Non-CJK: require 2+ chars
-      if (segment.length < 2 && !/[\u3000-\u9fff\uf900-\ufaff]/.test(segment)) continue
+      // Chinese: allow single CJK chars (stopwords already filtered above)
+      // Japanese: require 2+ chars for all (single kanji are often compound fragments)
+      if (segment.length < 2 && (hasJa || !/[\u3000-\u9fff\uf900-\ufaff]/.test(segment))) continue
       tokens.push(segment)
     }
   } else {

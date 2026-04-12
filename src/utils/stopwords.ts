@@ -87,6 +87,8 @@ const JA_STOP_WORDS = [
   '知る', '知った', '見る', '見た', '見て',
   '出る', '出た', '行く', '行った', '行って', '行き',
   '来る', '来た', '来て',
+  // Chat-specific noise (laughter/reactions)
+  '笑', 'www', 'ww', 'wwww',
 ]
 
 // English: pronouns, prepositions, conjunctions, auxiliaries, determiners, adverbs
