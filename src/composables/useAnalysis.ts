@@ -2,6 +2,7 @@ import { ref } from 'vue'
 import type { AnalysisResult, Message } from '@/types'
 import { getAllMessagesForAnalysis, getMembers } from '@/db/queries'
 import { STOP_WORDS } from '@/utils/stopwords'
+import { computeTfIdf } from '@/utils/tfidf'
 
 export interface ExtraStats {
   mostActiveDay: { date: string; count: number }
@@ -181,19 +182,32 @@ function computeAnalysis(
     .map(([type, count]) => ({ type: type as any, count }))
     .sort((a, b) => b.count - a.count)
 
-  // Word frequency
+  // Word frequency — use TF-IDF to filter filler words shared by everyone
   const memberNamesList = Array.from(memberMap.values())
-  const wordCounts = new Map<string, number>()
+  const globalWordCounts = new Map<string, number>()
+  const perMemberWordCounts = new Map<string, Map<string, number>>()
+
   for (const m of messages) {
     if (m.type !== 'text') continue
-    // Skip single English-word messages (likely LINE sticker/emoji names)
     if (/^[a-zA-Z_]+$/.test(m.content.trim())) continue
     const words = tokenize(m.content, memberNamesList)
+    const memberKey = String(m.senderId)
+    if (!perMemberWordCounts.has(memberKey)) {
+      perMemberWordCounts.set(memberKey, new Map())
+    }
+    const memberWords = perMemberWordCounts.get(memberKey)!
     for (const word of words) {
-      wordCounts.set(word, (wordCounts.get(word) ?? 0) + 1)
+      globalWordCounts.set(word, (globalWordCounts.get(word) ?? 0) + 1)
+      memberWords.set(word, (memberWords.get(word) ?? 0) + 1)
     }
   }
-  const wordFrequency = Array.from(wordCounts.entries())
+
+  // Compute IDF to identify filler words (IDF ≈ 0 means every member uses it)
+  const { idf } = computeTfIdf(perMemberWordCounts)
+  const idfThreshold = perMemberWordCounts.size > 1 ? 0.1 : 0
+
+  const wordFrequency = Array.from(globalWordCounts.entries())
+    .filter(([word]) => (idf.get(word) ?? 0) > idfThreshold)
     .map(([word, count]) => ({ word, count }))
     .sort((a, b) => b.count - a.count)
     .slice(0, 150)
@@ -334,30 +348,39 @@ function computeCatchphrases(
   memberMap: Map<number, string>
 ): MemberCatchphrases[] {
   const memberNamesList = Array.from(memberMap.values())
-  const memberWords = new Map<number, Map<string, number>>()
+  const memberWords = new Map<string, Map<string, number>>()
 
   for (const m of messages) {
     if (m.type !== 'text') continue
-    // Skip single English-word messages (likely LINE sticker/emoji names)
     if (/^[a-zA-Z_]+$/.test(m.content.trim())) continue
-    if (!memberWords.has(m.senderId)) {
-      memberWords.set(m.senderId, new Map())
+    const key = String(m.senderId)
+    if (!memberWords.has(key)) {
+      memberWords.set(key, new Map())
     }
     const words = tokenize(m.content, memberNamesList)
-    const wordMap = memberWords.get(m.senderId)!
+    const wordMap = memberWords.get(key)!
     for (const w of words) {
       wordMap.set(w, (wordMap.get(w) ?? 0) + 1)
     }
   }
 
+  // Rank by TF-IDF: words distinctive to each member score highest
+  const { scores } = computeTfIdf(memberWords)
+
   return Array.from(memberWords.entries())
-    .map(([id, wordMap]) => ({
-      name: memberMap.get(id) ?? 'Unknown',
-      phrases: Array.from(wordMap.entries())
-        .map(([word, count]) => ({ word, count }))
-        .sort((a, b) => b.count - a.count)
-        .slice(0, 5),
-    }))
+    .map(([idStr, wordMap]) => {
+      const id = Number(idStr)
+      const memberScores = scores.get(idStr) ?? new Map<string, number>()
+      return {
+        name: memberMap.get(id) ?? 'Unknown',
+        phrases: Array.from(wordMap.entries())
+          .filter(([word]) => (memberScores.get(word) ?? 0) > 0)
+          .map(([word, count]) => ({ word, count, _score: memberScores.get(word) ?? 0 }))
+          .sort((a, b) => b._score - a._score)
+          .slice(0, 5)
+          .map(({ word, count }) => ({ word, count })),
+      }
+    })
     .sort((a, b) => {
       const aTop = a.phrases[0]?.count ?? 0
       const bTop = b.phrases[0]?.count ?? 0
@@ -509,7 +532,7 @@ const KATAKANA_RE = /^[\u30a0-\u30ff]+$/
 const LATIN_RE = /^[a-zA-Z]+$/
 const NUMBER_RE = /^\d+$/
 
-function tokenize(text: string, memberNames?: string[]): string[] {
+export function tokenize(text: string, memberNames?: string[]): string[] {
   if (!text) return []
   const cleaned = text.replace(/https?:\/\/\S+/g, '')
   const tokens: string[] = []
@@ -544,11 +567,13 @@ function tokenize(text: string, memberNames?: string[]): string[] {
 
   // CJK processing: strip member names from text before segmenting
   let cjkText = cleaned
-  const sortedNames = [...cjkMemberNames].sort((a, b) => b.length - a.length)
-  for (const name of sortedNames) {
-    while (cjkText.includes(name)) {
-      cjkText = cjkText.replace(name, ' ')
-    }
+  if (cjkMemberNames.length > 0) {
+    const sortedNames = [...cjkMemberNames].sort((a, b) => b.length - a.length)
+    const namePattern = new RegExp(
+      sortedNames.map(n => n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|'),
+      'g',
+    )
+    cjkText = cjkText.replace(namePattern, ' ')
   }
 
   // CJK: prefer Intl.Segmenter for proper word segmentation
