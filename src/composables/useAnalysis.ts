@@ -202,12 +202,17 @@ function computeAnalysis(
     }
   }
 
-  // Compute IDF to identify filler words (IDF ≈ 0 means every member uses it)
-  const { idf } = computeTfIdf(perMemberWordCounts)
-  const idfThreshold = perMemberWordCounts.size > 1 ? 0.1 : 0
+  // Use IDF to filter filler words only in groups (3+ members).
+  // In 1-2 person chats IDF is binary and would remove all shared vocabulary.
+  const numMembers = perMemberWordCounts.size
+  let wordEntries = Array.from(globalWordCounts.entries())
 
-  const wordFrequency = Array.from(globalWordCounts.entries())
-    .filter(([word]) => (idf.get(word) ?? 0) > idfThreshold)
+  if (numMembers >= 3) {
+    const { idf } = computeTfIdf(perMemberWordCounts)
+    wordEntries = wordEntries.filter(([word]) => (idf.get(word) ?? 0) > 0.1)
+  }
+
+  const wordFrequency = wordEntries
     .map(([word, count]) => ({ word, count }))
     .sort((a, b) => b.count - a.count)
     .slice(0, 150)
