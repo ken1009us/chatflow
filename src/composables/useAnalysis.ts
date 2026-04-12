@@ -369,18 +369,20 @@ function computeCatchphrases(
     }
   }
 
-  // Rank by TF-IDF: words distinctive to each member score highest
-  const { scores } = computeTfIdf(memberWords)
+  // Rank by TF-IDF in groups (3+ members) to surface distinctive words.
+  // In 1-2 person chats IDF is binary, so fall back to raw frequency.
+  const useTfIdf = memberWords.size >= 3
+  const scores = useTfIdf ? computeTfIdf(memberWords).scores : null
 
   return Array.from(memberWords.entries())
     .map(([idStr, wordMap]) => {
       const id = Number(idStr)
-      const memberScores = scores.get(idStr) ?? new Map<string, number>()
+      const memberScores = scores?.get(idStr)
       return {
         name: memberMap.get(id) ?? 'Unknown',
         phrases: Array.from(wordMap.entries())
-          .filter(([word]) => (memberScores.get(word) ?? 0) > 0)
-          .map(([word, count]) => ({ word, count, _score: memberScores.get(word) ?? 0 }))
+          .filter(([word]) => !memberScores || (memberScores.get(word) ?? 0) > 0)
+          .map(([word, count]) => ({ word, count, _score: memberScores?.get(word) ?? count }))
           .sort((a, b) => b._score - a._score)
           .slice(0, 5)
           .map(({ word, count }) => ({ word, count })),
