@@ -382,10 +382,9 @@ function computeCatchphrases(
         name: memberMap.get(id) ?? 'Unknown',
         phrases: Array.from(wordMap.entries())
           .filter(([word]) => !memberScores || (memberScores.get(word) ?? 0) > 0)
-          .map(([word, count]) => ({ word, count, _score: memberScores?.get(word) ?? count }))
-          .sort((a, b) => b._score - a._score)
-          .slice(0, 5)
-          .map(({ word, count }) => ({ word, count })),
+          .map(([word, count]) => ({ word, count }))
+          .sort((a, b) => b.count - a.count)
+          .slice(0, 5),
       }
     })
     .sort((a, b) => {
