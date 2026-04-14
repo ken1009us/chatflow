@@ -106,8 +106,10 @@
         "6": "土曜日"
       }
     },
+    "conversationStarter": {
+      "title": "話題を切り出した人"
+    },
     "tools": {
-      "importMore": "追加インポート",
       "conversationIndex": "会話インデックス",
       "memberManagement": "メンバー管理",
       "export": "エクスポート",

@@ -69,6 +69,11 @@ export interface MediaChampionEntry {
   imageCount: number
 }
 
+export interface ConversationStarterEntry {
+  name: string
+  count: number
+}
+
 export interface MonthlyActivity {
   month: string
   count: number
@@ -85,6 +90,7 @@ export function useAnalysis() {
   const compatibility = ref<CompatibilityPair[]>([])
   const mediaChampion = ref<MediaChampionEntry[]>([])
   const monthlyActivity = ref<MonthlyActivity[]>([])
+  const conversationStarter = ref<ConversationStarterEntry[]>([])
   const wordCloudStats = ref<WordCloudStats | null>(null)
   const analyzing = ref(false)
   const refiltering = ref(false)
@@ -105,11 +111,12 @@ export function useAnalysis() {
 
       messages.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
 
-      result.value = computeAnalysis(messages, memberMap)
+      const { result: analysisResult, totalWordCount, uniqueWordCount } = computeAnalysis(messages, memberMap)
+      result.value = analysisResult
       wordCloudStats.value = {
         totalMessages: messages.length,
-        totalWords: result.value.wordFrequency.reduce((sum, w) => sum + w.count, 0),
-        uniqueWords: result.value.wordFrequency.length,
+        totalWords: totalWordCount,
+        uniqueWords: uniqueWordCount,
       }
       extraStats.value = computeExtraStats(messages)
       memberBreakdown.value = computeMemberBreakdown(messages, memberMap)
@@ -120,6 +127,7 @@ export function useAnalysis() {
       compatibility.value = computeCompatibility(messages, memberMap)
       mediaChampion.value = computeMediaChampion(messages, memberMap)
       monthlyActivity.value = computeMonthlyActivity(messages)
+      conversationStarter.value = computeConversationStarter(messages, memberMap)
     } finally {
       analyzing.value = false
       refiltering.value = false
@@ -129,25 +137,29 @@ export function useAnalysis() {
   return {
     result, extraStats, wordCloudStats, memberBreakdown, emojiRanking,
     catchphrases, replySpeed, nightOwl, compatibility, mediaChampion, monthlyActivity,
-    refiltering, analyzing, analyze,
+    conversationStarter, refiltering, analyzing, analyze,
   }
 }
 
 function computeAnalysis(
   messages: Message[],
   memberMap: Map<number, string>
-): AnalysisResult {
+): { result: AnalysisResult; totalWordCount: number; uniqueWordCount: number } {
   if (messages.length === 0) {
     return {
-      totalMessages: 0,
-      memberCount: memberMap.size,
-      dateRange: { start: new Date(), end: new Date() },
-      dailyAverage: 0,
-      activityByDate: [],
-      activityByHourDay: Array.from({ length: 7 }, () => Array(24).fill(0)),
-      memberRanking: [],
-      messageTypes: [],
-      wordFrequency: [],
+      result: {
+        totalMessages: 0,
+        memberCount: memberMap.size,
+        dateRange: { start: new Date(), end: new Date() },
+        dailyAverage: 0,
+        activityByDate: [],
+        activityByHourDay: Array.from({ length: 7 }, () => Array(24).fill(0)),
+        memberRanking: [],
+        messageTypes: [],
+        wordFrequency: [],
+      },
+      totalWordCount: 0,
+      uniqueWordCount: 0,
     }
   }
 
@@ -233,21 +245,26 @@ function computeAnalysis(
     wordEntries = wordEntries.filter(([word]) => (idf.get(word) ?? 0) > 0.1)
   }
 
-  const wordFrequency = wordEntries
+  const allWords = wordEntries
     .map(([word, count]) => ({ word, count }))
     .sort((a, b) => b.count - a.count)
-    .slice(0, 150)
+
+  const wordFrequency = allWords.slice(0, 150)
 
   return {
-    totalMessages,
-    memberCount,
-    dateRange,
-    dailyAverage,
-    activityByDate,
-    activityByHourDay,
-    memberRanking,
-    messageTypes,
-    wordFrequency,
+    result: {
+      totalMessages,
+      memberCount,
+      dateRange,
+      dailyAverage,
+      activityByDate,
+      activityByHourDay,
+      memberRanking,
+      messageTypes,
+      wordFrequency,
+    },
+    totalWordCount: allWords.reduce((sum, w) => sum + w.count, 0),
+    uniqueWordCount: allWords.length,
   }
 }
 
@@ -390,6 +407,8 @@ function computeMemberBreakdown(
 // --- New Analysis Functions ---
 
 const EMOJI_ONLY_RE = /^[\p{Emoji_Presentation}\p{Extended_Pictographic}\s]+$/u
+// Punctuation-only phrases (dots, question marks, etc.)
+const PUNCTUATION_ONLY_RE = /^[.\u2026\u22ef?？!！,，。、\-~～…·•\s]+$/
 
 function computeCatchphrases(
   messages: Message[],
@@ -428,7 +447,8 @@ function computeCatchphrases(
     }
 
     // Short text message (≤10 chars) → count whole message as catchphrase
-    if (trimmed.length <= 10) {
+    // Skip punctuation-only messages (dots, question marks, etc.)
+    if (trimmed.length <= 10 && !PUNCTUATION_ONLY_RE.test(trimmed)) {
       entry.phrases.set(trimmed, (entry.phrases.get(trimmed) ?? 0) + 1)
     }
   }
@@ -596,6 +616,30 @@ function computeMonthlyActivity(messages: Message[]): MonthlyActivity[] {
   return Array.from(counts.entries())
     .map(([month, count]) => ({ month, count }))
     .sort((a, b) => a.month.localeCompare(b.month))
+}
+
+function computeConversationStarter(
+  messages: Message[],
+  memberMap: Map<number, string>
+): ConversationStarterEntry[] {
+  const GAP_MS = 3 * 60 * 60 * 1000 // 3 hours
+  const counts = new Map<number, number>()
+
+  if (messages.length > 0) {
+    // First message is always a conversation start
+    counts.set(messages[0].senderId, 1)
+  }
+
+  for (let i = 1; i < messages.length; i++) {
+    const gap = messages[i].timestamp.getTime() - messages[i - 1].timestamp.getTime()
+    if (gap >= GAP_MS) {
+      counts.set(messages[i].senderId, (counts.get(messages[i].senderId) ?? 0) + 1)
+    }
+  }
+
+  return Array.from(counts.entries())
+    .map(([id, count]) => ({ name: memberMap.get(id) ?? 'Unknown', count }))
+    .sort((a, b) => b.count - a.count)
 }
 
 // --- Tokenizer ---

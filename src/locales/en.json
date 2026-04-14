@@ -106,8 +106,10 @@
         "6": "Saturday"
       }
     },
+    "conversationStarter": {
+      "title": "Conversation Starters"
+    },
     "tools": {
-      "importMore": "Import More",
       "conversationIndex": "Conversation Index",
       "memberManagement": "Members",
       "export": "Export",

@@ -106,8 +106,10 @@
         "6": "週六"
       }
     },
+    "conversationStarter": {
+      "title": "話題發起者"
+    },
     "tools": {
-      "importMore": "追加匯入",
       "conversationIndex": "會話索引",
       "memberManagement": "成員管理",
       "export": "匯出紀錄",

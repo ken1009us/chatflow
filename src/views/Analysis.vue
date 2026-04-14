@@ -26,6 +26,7 @@ import ReplySpeedCard from '@/components/analysis/ReplySpeedCard.vue'
 import NightOwlCard from '@/components/analysis/NightOwlCard.vue'
 import CompatibilityCard from '@/components/analysis/CompatibilityCard.vue'
 import MediaChampionCard from '@/components/analysis/MediaChampionCard.vue'
+import ConversationStarterCard from '@/components/analysis/ConversationStarterCard.vue'
 import ToolsSection from '@/components/analysis/ToolsSection.vue'
 
 const { t } = useI18n()
@@ -38,7 +39,7 @@ const session = ref<Session | null>(null)
 const {
   result, extraStats, wordCloudStats, memberBreakdown, emojiRanking,
   catchphrases, replySpeed, nightOwl, compatibility, mediaChampion, monthlyActivity,
-  analyzing, refiltering, analyze,
+  conversationStarter, analyzing, refiltering, analyze,
 } = useAnalysis()
 const copied = ref(false)
 
@@ -199,6 +200,12 @@ async function handleShare() {
             <EmojiChart
               v-if="emojiRanking.length"
               :data="emojiRanking"
+            />
+
+            <!-- Conversation Starter -->
+            <ConversationStarterCard
+              v-if="conversationStarter.length"
+              :data="conversationStarter"
             />
 
             <!-- Catchphrases (full width) -->

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import BaseModal from '@/components/common/BaseModal.vue'
 import BaseButton from '@/components/common/BaseButton.vue'
@@ -8,7 +7,6 @@ import { getMembers, searchMessages, updateMember } from '@/db/queries'
 import type { Member, Message } from '@/types'
 
 const { t } = useI18n()
-const router = useRouter()
 
 const props = defineProps<{
   sessionId: number
@@ -104,9 +102,6 @@ function formatTime(d: Date) {
 <template>
   <div class="rounded-lg border border-gray-200 bg-white px-4 py-3 dark:border-gray-800 dark:bg-neutral-900">
     <div class="flex flex-wrap gap-2">
-      <BaseButton variant="secondary" size="sm" @click="router.push('/upload')">
-        {{ t('analysis.tools.importMore') }}
-      </BaseButton>
       <BaseButton variant="secondary" size="sm" @click="openSearch">
         {{ t('analysis.tools.conversationIndex') }}
       </BaseButton>
