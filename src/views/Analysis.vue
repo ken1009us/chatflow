@@ -95,6 +95,7 @@ async function handleShare() {
     compatibility: compatibility.value,
     mediaChampion: mediaChampion.value,
     monthlyActivity: monthlyActivity.value,
+    conversationStarter: conversationStarter.value,
   })
   if (ok) {
     copied.value = true
@@ -144,20 +145,20 @@ async function handleShare() {
           <StatsSummary :result="result" />
 
           <!-- Fun Facts -->
-          <div v-if="extraStats" class="mt-4">
+          <div v-if="extraStats" class="mt-6">
             <FunFacts :result="result" :extra-stats="extraStats" />
           </div>
 
           <ToolsSection
             v-if="session?.id"
             :session-id="session.id"
-            class="mt-4"
+            class="mt-6"
             @members-updated="loadSession()"
           />
 
-          <FilterBar v-model="filter" class="mt-4" />
+          <FilterBar v-model="filter" class="mt-6" />
 
-          <div :class="['mt-4 grid gap-4 transition-opacity duration-200 lg:grid-cols-2', refiltering ? 'pointer-events-none opacity-40' : '']">
+          <div :class="['mt-6 grid gap-6 transition-opacity duration-200 lg:grid-cols-2', refiltering ? 'pointer-events-none opacity-40' : '']">
             <!-- Activity Trend (full width) -->
             <ActivityTrendChart
               v-if="result.activityByDate.length"

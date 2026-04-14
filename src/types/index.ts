@@ -85,4 +85,5 @@ export interface ShareData {
   compatibility?: Array<{ memberA: string; memberB: string; aToB: number; bToA: number; balance: number }>
   mediaChampion?: Array<{ name: string; stickerCount: number; imageCount: number }>
   monthlyActivity?: Array<{ month: string; count: number }>
+  conversationStarter?: Array<{ name: string; count: number }>
 }

@@ -20,6 +20,7 @@ import ReplySpeedCard from '@/components/analysis/ReplySpeedCard.vue'
 import NightOwlCard from '@/components/analysis/NightOwlCard.vue'
 import CompatibilityCard from '@/components/analysis/CompatibilityCard.vue'
 import MediaChampionCard from '@/components/analysis/MediaChampionCard.vue'
+import ConversationStarterCard from '@/components/analysis/ConversationStarterCard.vue'
 
 const { t, locale: i18nLocale } = useI18n()
 const router = useRouter()
@@ -106,7 +107,7 @@ onMounted(async () => {
       />
 
       <!-- Fun Facts -->
-      <div v-if="data.extraStats" class="mt-4">
+      <div v-if="data.extraStats" class="mt-6">
         <FunFacts
           :result="{
             totalMessages: data.totalMessages,
@@ -123,7 +124,7 @@ onMounted(async () => {
         />
       </div>
 
-      <div class="mt-4 grid gap-4 lg:grid-cols-2">
+      <div class="mt-6 grid gap-6 lg:grid-cols-2">
         <!-- Activity Trend (full width) -->
         <ActivityTrendChart
           v-if="data.activityByDate.length"
@@ -166,6 +167,12 @@ onMounted(async () => {
         <EmojiChart
           v-if="data.emojiRanking?.length"
           :data="data.emojiRanking"
+        />
+
+        <!-- Conversation Starter -->
+        <ConversationStarterCard
+          v-if="data.conversationStarter?.length"
+          :data="data.conversationStarter"
         />
 
         <!-- Catchphrases (full width) -->
