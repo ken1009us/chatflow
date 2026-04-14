@@ -59,11 +59,11 @@ const option = computed(() => ({
 </script>
 
 <template>
-  <div>
+  <div class="flex flex-col">
     <h3 class="mb-2 text-xs font-medium text-gray-500 dark:text-gray-400">
       {{ locale === 'ja' ? '絵文字ランキング' : locale === 'zh-TW' ? '表情符號排行' : 'Emoji Ranking' }}
     </h3>
-    <BaseCard>
+    <BaseCard class="flex-1">
       <VChart v-if="data.length" :option="option" autoresize :style="{ height: `${Math.max(top.length * 28, 80)}px` }" />
       <div v-else class="flex h-20 items-center justify-center text-xs text-gray-500 dark:text-gray-500">
         {{ locale === 'ja' ? '絵文字なし' : locale === 'zh-TW' ? '無表情符號' : 'No emojis' }}

@@ -72,11 +72,11 @@ const option = computed(() => ({
 </script>
 
 <template>
-  <div>
+  <div class="flex flex-col">
     <h3 class="mb-2 text-xs font-medium text-gray-500 dark:text-gray-400">
       {{ t('analysis.charts.messageTypes') }}
     </h3>
-    <BaseCard>
+    <BaseCard class="flex-1">
       <VChart :option="option" autoresize style="height: 200px" />
     </BaseCard>
   </div>

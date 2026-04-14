@@ -38,11 +38,11 @@ const countUnit = computed(() =>
 </script>
 
 <template>
-  <div>
+  <div class="flex flex-col">
     <h3 class="mb-2 text-xs font-medium text-gray-500 dark:text-gray-400">
       {{ title }}
     </h3>
-    <BaseCard>
+    <BaseCard class="flex-1">
     <div class="grid grid-cols-2 gap-4">
       <!-- Sticker King -->
       <div v-if="stickerKing && stickerKing.stickerCount > 0" class="rounded-xl bg-gradient-to-br from-pink-500/10 to-purple-500/10 p-4 dark:from-pink-500/5 dark:to-purple-500/5">

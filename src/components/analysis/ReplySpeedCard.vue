@@ -43,11 +43,11 @@ function getLabel(index: number): string | null {
 </script>
 
 <template>
-  <div>
+  <div class="flex flex-col">
     <h3 class="mb-2 text-xs font-medium text-gray-500 dark:text-gray-400">
       {{ title }}
     </h3>
-    <BaseCard>
+    <BaseCard class="flex-1">
     <div class="space-y-2">
       <div v-for="(entry, idx) in top" :key="entry.name" class="flex items-center gap-3">
         <span class="w-16 shrink-0 truncate text-xs text-gray-700 dark:text-gray-200">

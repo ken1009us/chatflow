@@ -16,11 +16,11 @@ const maxCount = computed(() => top.value[0]?.count ?? 1)
 </script>
 
 <template>
-  <div>
+  <div class="flex flex-col">
     <h3 class="mb-2 text-xs font-medium text-gray-500 dark:text-gray-400">
       {{ t('analysis.conversationStarter.title') }}
     </h3>
-    <BaseCard>
+    <BaseCard class="flex-1">
       <div class="space-y-2">
         <div v-for="(entry, i) in top" :key="entry.name" class="flex items-center gap-3">
           <span class="w-20 shrink-0 truncate text-xs text-gray-600 dark:text-gray-300">

@@ -76,11 +76,11 @@ const hasStats = computed(() =>
 </script>
 
 <template>
-  <div>
+  <div class="flex flex-col">
     <h3 class="mb-2 text-xs font-medium text-gray-500 dark:text-gray-400">
       {{ t('analysis.charts.wordCloud') }}
     </h3>
-    <BaseCard>
+    <BaseCard class="flex-1">
       <VChart :option="option" autoresize style="height: 280px" />
       <div v-if="hasStats" class="mt-2 flex justify-center gap-6 border-t border-gray-100 pt-2 text-[11px] text-gray-500 dark:border-gray-800 dark:text-gray-400">
         <span v-if="totalMessages != null">{{ t('analysis.wordCloud.totalMessages') }}: {{ totalMessages?.toLocaleString() }}</span>

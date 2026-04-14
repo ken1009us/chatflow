@@ -22,12 +22,12 @@ const top = computed(() => props.data.filter(d => d.totalCount > 0).slice(0, 10)
 </script>
 
 <template>
-  <div>
+  <div class="flex flex-col">
     <h3 class="mb-0.5 text-xs font-medium text-gray-500 dark:text-gray-400">
       {{ title }}
     </h3>
     <p class="mb-2 text-[10px] text-gray-400 dark:text-gray-500">{{ subtitle }}</p>
-    <BaseCard>
+    <BaseCard class="flex-1">
     <div class="space-y-2">
       <div v-for="entry in top" :key="entry.name" class="flex items-center gap-3">
         <span class="w-16 shrink-0 truncate text-xs text-gray-700 dark:text-gray-200">

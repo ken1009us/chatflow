@@ -39,11 +39,11 @@ function isTypeItem(phrase: { type?: string }): boolean {
 </script>
 
 <template>
-  <div>
+  <div class="flex flex-col">
     <h3 class="mb-2 text-xs font-medium text-gray-500 dark:text-gray-400">
       {{ t('analysis.catchphrases.title') }}
     </h3>
-    <BaseCard>
+    <BaseCard class="flex-1">
     <div class="space-y-3">
       <div v-for="(member, idx) in top" :key="member.name" class="flex flex-col gap-1.5 sm:flex-row sm:items-center sm:gap-3">
         <span class="w-20 shrink-0 truncate text-xs font-medium text-gray-700 dark:text-gray-200">

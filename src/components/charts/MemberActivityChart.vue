@@ -100,11 +100,11 @@ const option = computed(() => ({
 </script>
 
 <template>
-  <div>
+  <div class="flex flex-col">
     <h3 class="mb-2 text-xs font-medium text-gray-500 dark:text-gray-400">
       {{ locale === 'ja' ? 'メンバー別メッセージ種類' : locale === 'zh-TW' ? '成員訊息類型' : 'Member Message Types' }}
     </h3>
-    <BaseCard>
+    <BaseCard class="flex-1">
       <VChart :option="option" autoresize :style="{ height: `${Math.max(sorted.length * 28 + 28, 120)}px` }" />
     </BaseCard>
   </div>

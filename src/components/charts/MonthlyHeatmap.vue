@@ -55,11 +55,11 @@ const yearGroups = computed(() => {
 </script>
 
 <template>
-  <div>
+  <div class="flex flex-col">
     <h3 class="mb-2 text-xs font-medium text-gray-500 dark:text-gray-400">
       {{ title }}
     </h3>
-    <BaseCard>
+    <BaseCard class="flex-1">
     <div class="space-y-2">
       <div v-for="group in yearGroups" :key="group.year" class="flex items-center gap-2">
         <span class="w-10 shrink-0 text-[10px] tabular-nums text-gray-500 dark:text-gray-400">

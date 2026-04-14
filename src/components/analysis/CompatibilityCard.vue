@@ -23,11 +23,11 @@ const top = computed(() => props.data.slice(0, 5))
 </script>
 
 <template>
-  <div>
+  <div class="flex flex-col">
     <h3 class="mb-2 text-xs font-medium text-gray-500 dark:text-gray-400">
       {{ title }}
     </h3>
-    <BaseCard>
+    <BaseCard class="flex-1">
     <div class="space-y-4">
       <div v-for="(pair, idx) in top" :key="`${pair.memberA}-${pair.memberB}`">
         <div class="mb-1.5 flex items-center justify-between">
