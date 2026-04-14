@@ -3,35 +3,34 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import BaseCard from '@/components/common/BaseCard.vue'
 import { CHART_COLORS } from '@/utils/colors'
-import { STOP_WORDS } from '@/utils/stopwords'
 import type { MemberCatchphrases } from '@/composables/useAnalysis'
 
-const { locale } = useI18n()
+const { t } = useI18n()
 
 const props = defineProps<{
   data: MemberCatchphrases[]
 }>()
 
-const title = computed(() =>
-  locale.value === 'ja' ? '口癖ランキング' : locale.value === 'zh-TW' ? '口頭禪' : 'Catchphrases'
-)
+const TYPE_LABELS: Record<string, string> = {
+  sticker: 'analysis.catchphrases.sticker',
+  image: 'analysis.catchphrases.image',
+  emoji: 'analysis.catchphrases.emoji',
+}
 
-const STICKER_RE = /^[a-zA-Z_]+$/
+const top = computed(() => props.data.slice(0, 10))
 
-const top = computed(() =>
-  props.data.slice(0, 10).map(member => ({
-    ...member,
-    phrases: member.phrases
-      .filter(p => !STICKER_RE.test(p.word) && !STOP_WORDS.has(p.word) && !STOP_WORDS.has(p.word.toLowerCase()))
-      .slice(0, 5),
-  })).filter(member => member.phrases.length > 0)
-)
+function displayWord(phrase: { word: string; type?: string }): string {
+  if (phrase.type && TYPE_LABELS[phrase.type]) {
+    return t(TYPE_LABELS[phrase.type])
+  }
+  return phrase.word
+}
 </script>
 
 <template>
   <div>
     <h3 class="mb-2 text-xs font-medium text-gray-500 dark:text-gray-400">
-      {{ title }}
+      {{ t('analysis.catchphrases.title') }}
     </h3>
     <BaseCard>
     <div class="space-y-3">
@@ -50,7 +49,7 @@ const top = computed(() =>
               border: `1px solid ${CHART_COLORS[idx % CHART_COLORS.length]}30`,
             }"
           >
-            {{ phrase.word }}
+            {{ displayWord(phrase) }}
             <span class="opacity-60">{{ phrase.count }}</span>
           </span>
         </div>

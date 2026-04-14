@@ -20,6 +20,9 @@ const STICKER_RE = /^[a-zA-Z_]+$/
 
 const props = defineProps<{
   data: Array<{ word: string; count: number }>
+  totalMessages?: number
+  totalWords?: number
+  uniqueWords?: number
 }>()
 
 const filteredData = computed(() =>
@@ -66,6 +69,10 @@ const option = computed(() => ({
     },
   ],
 }))
+
+const hasStats = computed(() =>
+  props.totalMessages != null || props.totalWords != null || props.uniqueWords != null
+)
 </script>
 
 <template>
@@ -75,6 +82,11 @@ const option = computed(() => ({
     </h3>
     <BaseCard>
       <VChart :option="option" autoresize style="height: 280px" />
+      <div v-if="hasStats" class="mt-2 flex justify-center gap-6 border-t border-gray-100 pt-2 text-[11px] text-gray-500 dark:border-gray-800 dark:text-gray-400">
+        <span v-if="totalMessages != null">{{ t('analysis.wordCloud.totalMessages') }}: {{ totalMessages?.toLocaleString() }}</span>
+        <span v-if="totalWords != null">{{ t('analysis.wordCloud.totalWords') }}: {{ totalWords?.toLocaleString() }}</span>
+        <span v-if="uniqueWords != null">{{ t('analysis.wordCloud.uniqueWords') }}: {{ uniqueWords?.toLocaleString() }}</span>
+      </div>
     </BaseCard>
   </div>
 </template>

@@ -26,6 +26,7 @@ import ReplySpeedCard from '@/components/analysis/ReplySpeedCard.vue'
 import NightOwlCard from '@/components/analysis/NightOwlCard.vue'
 import CompatibilityCard from '@/components/analysis/CompatibilityCard.vue'
 import MediaChampionCard from '@/components/analysis/MediaChampionCard.vue'
+import ToolsSection from '@/components/analysis/ToolsSection.vue'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -35,7 +36,7 @@ const { copyShareUrl } = useShare()
 
 const session = ref<Session | null>(null)
 const {
-  result, extraStats, memberBreakdown, emojiRanking,
+  result, extraStats, wordCloudStats, memberBreakdown, emojiRanking,
   catchphrases, replySpeed, nightOwl, compatibility, mediaChampion, monthlyActivity,
   analyzing, refiltering, analyze,
 } = useAnalysis()
@@ -146,6 +147,13 @@ async function handleShare() {
             <FunFacts :result="result" :extra-stats="extraStats" />
           </div>
 
+          <ToolsSection
+            v-if="session?.id"
+            :session-id="session.id"
+            class="mt-4"
+            @members-updated="loadSession()"
+          />
+
           <FilterBar v-model="filter" class="mt-4" />
 
           <div :class="['mt-4 grid gap-4 transition-opacity duration-200 lg:grid-cols-2', refiltering ? 'pointer-events-none opacity-40' : '']">
@@ -169,6 +177,9 @@ async function handleShare() {
             <WordCloudChart
               v-if="result.wordFrequency.length"
               :data="result.wordFrequency"
+              :total-messages="wordCloudStats?.totalMessages"
+              :total-words="wordCloudStats?.totalWords"
+              :unique-words="wordCloudStats?.uniqueWords"
               class="lg:col-span-2"
             />
 

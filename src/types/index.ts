@@ -75,8 +75,11 @@ export interface ShareData {
     topEmojis: Array<{ emoji: string; count: number }>
     peakHour: number
     weekendRatio: number
+    mostActiveDayOfWeek?: number
+    activeDays?: number
+    activityRate?: number
   }
-  catchphrases?: Array<{ name: string; phrases: Array<{ word: string; count: number }> }>
+  catchphrases?: Array<{ name: string; phrases: Array<{ word: string; count: number; type?: string }> }>
   replySpeed?: Array<{ name: string; avgMinutes: number; totalReplies: number }>
   nightOwl?: Array<{ name: string; nightCount: number; totalCount: number; ratio: number }>
   compatibility?: Array<{ memberA: string; memberB: string; aToB: number; bToA: number; balance: number }>

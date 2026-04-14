@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter, useRoute } from 'vue-router'
 import { useShare } from '@/composables/useShare'
@@ -29,6 +29,10 @@ const { decodeShareData, fetchShareData } = useShare()
 const data = ref<ShareData | null>(null)
 const loading = ref(false)
 const invalid = ref(false)
+
+const sharedTotalWords = computed(() =>
+  data.value?.wordFrequency.reduce((s, w) => s + w.count, 0) ?? 0
+)
 
 const SUPPORTED_LOCALES = ['ja', 'zh-TW', 'en']
 
@@ -140,6 +144,9 @@ onMounted(async () => {
         <WordCloudChart
           v-if="data.wordFrequency.length"
           :data="data.wordFrequency"
+          :total-messages="data.totalMessages"
+          :total-words="sharedTotalWords"
+          :unique-words="data.wordFrequency.length"
           class="lg:col-span-2"
         />
 
@@ -164,7 +171,7 @@ onMounted(async () => {
         <!-- Catchphrases (full width) -->
         <CatchphrasesCard
           v-if="data.catchphrases?.length"
-          :data="data.catchphrases"
+          :data="(data.catchphrases as any)"
           class="lg:col-span-2"
         />
 

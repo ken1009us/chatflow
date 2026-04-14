@@ -71,7 +71,51 @@
       "weekly": "按週",
       "monthly": "按月"
     },
-    "share": "分享分析"
+    "share": "分享分析",
+    "catchphrases": {
+      "title": "口頭禪",
+      "sticker": "貼圖",
+      "image": "圖片",
+      "emoji": "emoji"
+    },
+    "wordCloud": {
+      "totalMessages": "訊息數",
+      "totalWords": "總詞數",
+      "uniqueWords": "不重複詞數"
+    },
+    "funFacts": {
+      "title": "有趣的統計",
+      "mostActiveDay": "最活躍的一天",
+      "chatStreak": "連續聊天天數",
+      "days": "{count} 天",
+      "avgMessageLength": "平均訊息長度",
+      "chars": "{count} 字",
+      "emojisUsed": "表情符號數",
+      "peakHour": "最活躍時段",
+      "weekendRatio": "週末聊天比例",
+      "mostActiveDayOfWeek": "最活躍星期",
+      "activeDays": "活躍天數",
+      "activityRate": "活躍率",
+      "weekdays": {
+        "0": "週日",
+        "1": "週一",
+        "2": "週二",
+        "3": "週三",
+        "4": "週四",
+        "5": "週五",
+        "6": "週六"
+      }
+    },
+    "tools": {
+      "importMore": "追加匯入",
+      "conversationIndex": "會話索引",
+      "memberManagement": "成員管理",
+      "export": "匯出紀錄",
+      "rename": "重新命名",
+      "searchPlaceholder": "搜尋訊息...",
+      "search": "搜尋",
+      "noResults": "找不到相關訊息"
+    }
   },
   "settings": {
     "title": "設定",

@@ -12,6 +12,15 @@ export interface ExtraStats {
   topEmojis: Array<{ emoji: string; count: number }>
   peakHour: number
   weekendRatio: number
+  mostActiveDayOfWeek: number
+  activeDays: number
+  activityRate: number
+}
+
+export interface WordCloudStats {
+  totalMessages: number
+  totalWords: number
+  uniqueWords: number
 }
 
 export interface MemberBreakdown {
@@ -22,9 +31,15 @@ export interface MemberBreakdown {
   otherCount: number
 }
 
+export interface CatchphraseItem {
+  word: string
+  count: number
+  type?: 'sticker' | 'image' | 'emoji'
+}
+
 export interface MemberCatchphrases {
   name: string
-  phrases: Array<{ word: string; count: number }>
+  phrases: CatchphraseItem[]
 }
 
 export interface ReplySpeedEntry {
@@ -70,6 +85,7 @@ export function useAnalysis() {
   const compatibility = ref<CompatibilityPair[]>([])
   const mediaChampion = ref<MediaChampionEntry[]>([])
   const monthlyActivity = ref<MonthlyActivity[]>([])
+  const wordCloudStats = ref<WordCloudStats | null>(null)
   const analyzing = ref(false)
   const refiltering = ref(false)
 
@@ -90,6 +106,11 @@ export function useAnalysis() {
       messages.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
 
       result.value = computeAnalysis(messages, memberMap)
+      wordCloudStats.value = {
+        totalMessages: messages.length,
+        totalWords: result.value.wordFrequency.reduce((sum, w) => sum + w.count, 0),
+        uniqueWords: result.value.wordFrequency.length,
+      }
       extraStats.value = computeExtraStats(messages)
       memberBreakdown.value = computeMemberBreakdown(messages, memberMap)
       emojiRanking.value = extraStats.value.topEmojis
@@ -106,7 +127,7 @@ export function useAnalysis() {
   }
 
   return {
-    result, extraStats, memberBreakdown, emojiRanking,
+    result, extraStats, wordCloudStats, memberBreakdown, emojiRanking,
     catchphrases, replySpeed, nightOwl, compatibility, mediaChampion, monthlyActivity,
     refiltering, analyzing, analyze,
   }
@@ -240,6 +261,9 @@ function computeExtraStats(messages: Message[]): ExtraStats {
       topEmojis: [],
       peakHour: 0,
       weekendRatio: 0,
+      mostActiveDayOfWeek: 0,
+      activeDays: 0,
+      activityRate: 0,
     }
   }
 
@@ -307,6 +331,20 @@ function computeExtraStats(messages: Message[]): ExtraStats {
   })
   const weekendRatio = messages.length > 0 ? weekendMessages.length / messages.length : 0
 
+  // Most active day of week (0=Sun)
+  const dayOfWeekCounts = new Array(7).fill(0)
+  for (const m of messages) {
+    dayOfWeekCounts[m.timestamp.getDay()]++
+  }
+  const mostActiveDayOfWeek = dayOfWeekCounts.indexOf(Math.max(...dayOfWeekCounts))
+
+  // Active days & activity rate
+  const activeDays = dateCounts.size
+  const totalDays = Math.max(1, Math.ceil(
+    (messages[messages.length - 1].timestamp.getTime() - messages[0].timestamp.getTime()) / (1000 * 60 * 60 * 24)
+  ) + 1)
+  const activityRate = activeDays / totalDays
+
   return {
     mostActiveDay,
     longestStreak,
@@ -315,6 +353,9 @@ function computeExtraStats(messages: Message[]): ExtraStats {
     topEmojis,
     peakHour,
     weekendRatio,
+    mostActiveDayOfWeek,
+    activeDays,
+    activityRate,
   }
 }
 
@@ -348,45 +389,73 @@ function computeMemberBreakdown(
 
 // --- New Analysis Functions ---
 
+const EMOJI_ONLY_RE = /^[\p{Emoji_Presentation}\p{Extended_Pictographic}\s]+$/u
+
 function computeCatchphrases(
   messages: Message[],
   memberMap: Map<number, string>
 ): MemberCatchphrases[] {
-  const memberNamesList = Array.from(memberMap.values())
-  const memberWords = new Map<string, Map<string, number>>()
+  const memberData = new Map<number, {
+    phrases: Map<string, number>
+    stickerCount: number
+    imageCount: number
+    emojiCount: number
+  }>()
 
   for (const m of messages) {
-    if (m.type !== 'text') continue
-    if (/^[a-zA-Z_]+$/.test(m.content.trim())) continue
-    const key = String(m.senderId)
-    if (!memberWords.has(key)) {
-      memberWords.set(key, new Map())
+    if (!memberData.has(m.senderId)) {
+      memberData.set(m.senderId, { phrases: new Map(), stickerCount: 0, imageCount: 0, emojiCount: 0 })
     }
-    const words = tokenize(m.content, memberNamesList)
-    const wordMap = memberWords.get(key)!
-    for (const w of words) {
-      wordMap.set(w, (wordMap.get(w) ?? 0) + 1)
+    const entry = memberData.get(m.senderId)!
+
+    if (m.type === 'sticker') {
+      entry.stickerCount++
+      continue
+    }
+    if (m.type === 'image') {
+      entry.imageCount++
+      continue
+    }
+    if (m.type !== 'text') continue
+
+    const trimmed = m.content.trim()
+    if (!trimmed) continue
+
+    // Emoji-only message
+    if (EMOJI_ONLY_RE.test(trimmed)) {
+      entry.emojiCount++
+      continue
+    }
+
+    // Short text message (≤10 chars) → count whole message as catchphrase
+    if (trimmed.length <= 10) {
+      entry.phrases.set(trimmed, (entry.phrases.get(trimmed) ?? 0) + 1)
     }
   }
 
-  // Rank by TF-IDF in groups (3+ members) to surface distinctive words.
-  // In 1-2 person chats IDF is binary, so fall back to raw frequency.
-  const useTfIdf = memberWords.size >= 3
-  const scores = useTfIdf ? computeTfIdf(memberWords).scores : null
+  return Array.from(memberData.entries())
+    .map(([id, data]) => {
+      const items: CatchphraseItem[] = []
 
-  return Array.from(memberWords.entries())
-    .map(([idStr, wordMap]) => {
-      const id = Number(idStr)
-      const memberScores = scores?.get(idStr)
+      // Add type counts
+      if (data.stickerCount > 0) items.push({ word: '__sticker__', count: data.stickerCount, type: 'sticker' })
+      if (data.imageCount > 0) items.push({ word: '__image__', count: data.imageCount, type: 'image' })
+      if (data.emojiCount > 0) items.push({ word: '__emoji__', count: data.emojiCount, type: 'emoji' })
+
+      // Add text phrases
+      for (const [word, count] of data.phrases) {
+        items.push({ word, count })
+      }
+
+      // Sort by count desc, take top 10
+      items.sort((a, b) => b.count - a.count)
+
       return {
         name: memberMap.get(id) ?? 'Unknown',
-        phrases: Array.from(wordMap.entries())
-          .filter(([word]) => !memberScores || (memberScores.get(word) ?? 0) > 0)
-          .map(([word, count]) => ({ word, count }))
-          .sort((a, b) => b.count - a.count)
-          .slice(0, 5),
+        phrases: items.slice(0, 10),
       }
     })
+    .filter((m) => m.phrases.length > 0)
     .sort((a, b) => {
       const aTop = a.phrases[0]?.count ?? 0
       const bTop = b.phrases[0]?.count ?? 0

@@ -16,18 +16,27 @@ const props = defineProps<{
     topEmojis: Array<{ emoji: string; count: number }>
     peakHour: number
     weekendRatio: number
+    mostActiveDayOfWeek?: number
+    activeDays?: number
+    activityRate?: number
   }
 }>()
 
+const weekdayName = computed(() => {
+  const dow = props.extraStats.mostActiveDayOfWeek
+  if (dow == null) return ''
+  const key = `analysis.funFacts.weekdays.${dow}`
+  return t(key)
+})
+
 const facts = computed(() => {
-  const r = props.result
   const e = props.extraStats
   const items: Array<{ icon: string; label: string; value: string; color: string }> = []
 
   if (e.mostActiveDay.count > 0) {
     items.push({
       icon: '🔥',
-      label: locale.value === 'ja' ? '最もアクティブな日' : locale.value === 'zh-TW' ? '最活躍的一天' : 'Most Active Day',
+      label: t('analysis.funFacts.mostActiveDay'),
       value: `${e.mostActiveDay.date} (${e.mostActiveDay.count})`,
       color: CHART_COLORS[0],
     })
@@ -36,23 +45,23 @@ const facts = computed(() => {
   if (e.longestStreak > 0) {
     items.push({
       icon: '📅',
-      label: locale.value === 'ja' ? '連続チャット日数' : locale.value === 'zh-TW' ? '連續聊天天數' : 'Chat Streak',
-      value: locale.value === 'ja' ? `${e.longestStreak} 日` : locale.value === 'zh-TW' ? `${e.longestStreak} 天` : `${e.longestStreak} days`,
+      label: t('analysis.funFacts.chatStreak'),
+      value: t('analysis.funFacts.days', { count: e.longestStreak }),
       color: CHART_COLORS[3],
     })
   }
 
   items.push({
     icon: '📝',
-    label: locale.value === 'ja' ? '平均メッセージ長' : locale.value === 'zh-TW' ? '平均訊息長度' : 'Avg Message Length',
-    value: locale.value === 'ja' ? `${e.avgMessageLength} 文字` : locale.value === 'zh-TW' ? `${e.avgMessageLength} 字` : `${e.avgMessageLength} chars`,
+    label: t('analysis.funFacts.avgMessageLength'),
+    value: t('analysis.funFacts.chars', { count: e.avgMessageLength }),
     color: CHART_COLORS[4],
   })
 
   if (e.emojiCount > 0) {
     items.push({
       icon: '😀',
-      label: locale.value === 'ja' ? '絵文字使用数' : locale.value === 'zh-TW' ? '表情符號數' : 'Emojis Used',
+      label: t('analysis.funFacts.emojisUsed'),
       value: e.emojiCount.toLocaleString(),
       color: CHART_COLORS[1],
     })
@@ -60,17 +69,49 @@ const facts = computed(() => {
 
   items.push({
     icon: '⏰',
-    label: locale.value === 'ja' ? '最も活発な時間帯' : locale.value === 'zh-TW' ? '最活躍時段' : 'Peak Hour',
+    label: t('analysis.funFacts.peakHour'),
     value: `${e.peakHour}:00 - ${e.peakHour + 1}:00`,
     color: CHART_COLORS[5],
   })
 
   items.push({
     icon: '🏖️',
-    label: locale.value === 'ja' ? '週末チャット率' : locale.value === 'zh-TW' ? '週末聊天比例' : 'Weekend Ratio',
+    label: t('analysis.funFacts.weekendRatio'),
     value: `${Math.round(e.weekendRatio * 100)}%`,
     color: CHART_COLORS[7],
   })
+
+  // New stats
+  if (e.mostActiveDayOfWeek != null) {
+    items.push({
+      icon: '📆',
+      label: t('analysis.funFacts.mostActiveDayOfWeek'),
+      value: weekdayName.value,
+      color: CHART_COLORS[2],
+    })
+  }
+
+  if (e.activeDays != null && e.activeDays > 0) {
+    const dateRange = props.result.dateRange
+    const totalDays = Math.max(1, Math.ceil(
+      (dateRange.end.getTime() - dateRange.start.getTime()) / (1000 * 60 * 60 * 24)
+    ) + 1)
+    items.push({
+      icon: '📊',
+      label: t('analysis.funFacts.activeDays'),
+      value: `${e.activeDays} / ${totalDays}${locale.value === 'ja' ? '日' : locale.value === 'zh-TW' ? '天' : ' days'}`,
+      color: CHART_COLORS[8],
+    })
+  }
+
+  if (e.activityRate != null) {
+    items.push({
+      icon: '📈',
+      label: t('analysis.funFacts.activityRate'),
+      value: `${Math.round(e.activityRate * 100)}%`,
+      color: CHART_COLORS[9],
+    })
+  }
 
   return items
 })
@@ -81,11 +122,11 @@ const facts = computed(() => {
 <template>
   <div>
     <h3 class="mb-2 text-xs font-medium text-gray-500 dark:text-gray-400">
-      {{ locale === 'ja' ? '面白い統計' : locale === 'zh-TW' ? '有趣的統計' : 'Fun Facts' }}
+      {{ t('analysis.funFacts.title') }}
     </h3>
     <div class="rounded-lg border border-gray-200 bg-white px-4 py-4 dark:border-gray-800 dark:bg-neutral-900">
 
-    <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+    <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-3">
       <div
         v-for="(fact, i) in facts"
         :key="i"

@@ -71,7 +71,51 @@
       "weekly": "週別",
       "monthly": "月別"
     },
-    "share": "分析を共有"
+    "share": "分析を共有",
+    "catchphrases": {
+      "title": "口癖ランキング",
+      "sticker": "スタンプ",
+      "image": "画像",
+      "emoji": "絵文字"
+    },
+    "wordCloud": {
+      "totalMessages": "メッセージ数",
+      "totalWords": "総語数",
+      "uniqueWords": "ユニーク語数"
+    },
+    "funFacts": {
+      "title": "面白い統計",
+      "mostActiveDay": "最もアクティブな日",
+      "chatStreak": "連続チャット日数",
+      "days": "{count} 日",
+      "avgMessageLength": "平均メッセージ長",
+      "chars": "{count} 文字",
+      "emojisUsed": "絵文字使用数",
+      "peakHour": "最も活発な時間帯",
+      "weekendRatio": "週末チャット率",
+      "mostActiveDayOfWeek": "最も活発な曜日",
+      "activeDays": "アクティブ日数",
+      "activityRate": "アクティブ率",
+      "weekdays": {
+        "0": "日曜日",
+        "1": "月曜日",
+        "2": "火曜日",
+        "3": "水曜日",
+        "4": "木曜日",
+        "5": "金曜日",
+        "6": "土曜日"
+      }
+    },
+    "tools": {
+      "importMore": "追加インポート",
+      "conversationIndex": "会話インデックス",
+      "memberManagement": "メンバー管理",
+      "export": "エクスポート",
+      "rename": "名前変更",
+      "searchPlaceholder": "メッセージを検索...",
+      "search": "検索",
+      "noResults": "該当するメッセージが見つかりません"
+    }
   },
   "settings": {
     "title": "設定",

@@ -71,7 +71,51 @@
       "weekly": "Weekly",
       "monthly": "Monthly"
     },
-    "share": "Share Analysis"
+    "share": "Share Analysis",
+    "catchphrases": {
+      "title": "Catchphrases",
+      "sticker": "Stickers",
+      "image": "Photos",
+      "emoji": "Emoji"
+    },
+    "wordCloud": {
+      "totalMessages": "Messages",
+      "totalWords": "Total Words",
+      "uniqueWords": "Unique Words"
+    },
+    "funFacts": {
+      "title": "Fun Facts",
+      "mostActiveDay": "Most Active Day",
+      "chatStreak": "Chat Streak",
+      "days": "{count} days",
+      "avgMessageLength": "Avg Message Length",
+      "chars": "{count} chars",
+      "emojisUsed": "Emojis Used",
+      "peakHour": "Peak Hour",
+      "weekendRatio": "Weekend Ratio",
+      "mostActiveDayOfWeek": "Most Active Weekday",
+      "activeDays": "Active Days",
+      "activityRate": "Activity Rate",
+      "weekdays": {
+        "0": "Sunday",
+        "1": "Monday",
+        "2": "Tuesday",
+        "3": "Wednesday",
+        "4": "Thursday",
+        "5": "Friday",
+        "6": "Saturday"
+      }
+    },
+    "tools": {
+      "importMore": "Import More",
+      "conversationIndex": "Conversation Index",
+      "memberManagement": "Members",
+      "export": "Export",
+      "rename": "Rename",
+      "searchPlaceholder": "Search messages...",
+      "search": "Search",
+      "noResults": "No messages found"
+    }
   },
   "settings": {
     "title": "Settings",

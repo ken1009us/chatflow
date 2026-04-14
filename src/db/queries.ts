@@ -68,6 +68,10 @@ export async function searchMessages(
     .map((m) => ({ ...m, senderName: memberMap.get(m.senderId) ?? 'Unknown' }))
 }
 
+export async function updateMember(id: number, updates: Partial<Member>): Promise<void> {
+  await db.members.update(id, updates)
+}
+
 export async function getAllMessagesForAnalysis(sessionId: number): Promise<Message[]> {
   return db.messages
     .where('sessionId')
