@@ -74,6 +74,11 @@ export interface ConversationStarterEntry {
   count: number
 }
 
+export interface LeftOnReadEntry {
+  name: string
+  count: number
+}
+
 export interface MonthlyActivity {
   month: string
   count: number
@@ -91,6 +96,7 @@ export function useAnalysis() {
   const mediaChampion = ref<MediaChampionEntry[]>([])
   const monthlyActivity = ref<MonthlyActivity[]>([])
   const conversationStarter = ref<ConversationStarterEntry[]>([])
+  const leftOnRead = ref<LeftOnReadEntry[]>([])
   const wordCloudStats = ref<WordCloudStats | null>(null)
   const analyzing = ref(false)
   const refiltering = ref(false)
@@ -128,6 +134,7 @@ export function useAnalysis() {
       mediaChampion.value = computeMediaChampion(messages, memberMap)
       monthlyActivity.value = computeMonthlyActivity(messages)
       conversationStarter.value = computeConversationStarter(messages, memberMap)
+      leftOnRead.value = computeLeftOnRead(messages, memberMap)
     } finally {
       analyzing.value = false
       refiltering.value = false
@@ -137,7 +144,7 @@ export function useAnalysis() {
   return {
     result, extraStats, wordCloudStats, memberBreakdown, emojiRanking,
     catchphrases, replySpeed, nightOwl, compatibility, mediaChampion, monthlyActivity,
-    conversationStarter, refiltering, analyzing, analyze,
+    conversationStarter, leftOnRead, refiltering, analyzing, analyze,
   }
 }
 
@@ -635,6 +642,45 @@ function computeConversationStarter(
     if (gap >= GAP_MS) {
       counts.set(messages[i].senderId, (counts.get(messages[i].senderId) ?? 0) + 1)
     }
+  }
+
+  return Array.from(counts.entries())
+    .map(([id, count]) => ({ name: memberMap.get(id) ?? 'Unknown', count }))
+    .sort((a, b) => b.count - a.count)
+}
+
+function computeLeftOnRead(
+  messages: Message[],
+  memberMap: Map<number, string>
+): LeftOnReadEntry[] {
+  const GAP_MS = 3 * 60 * 60 * 1000 // 3 hours
+  const counts = new Map<number, number>()
+
+  if (messages.length === 0) return []
+
+  let burstSender = messages[0].senderId
+  let burstEnd = messages[0].timestamp.getTime()
+
+  for (let i = 1; i < messages.length; i++) {
+    const msg = messages[i]
+    if (msg.senderId === burstSender) {
+      // Same sender continues the burst
+      burstEnd = msg.timestamp.getTime()
+    } else {
+      // Different sender — check if gap since burst end is long enough
+      const gap = msg.timestamp.getTime() - burstEnd
+      if (gap >= GAP_MS) {
+        counts.set(burstSender, (counts.get(burstSender) ?? 0) + 1)
+      }
+      burstSender = msg.senderId
+      burstEnd = msg.timestamp.getTime()
+    }
+  }
+
+  // Last burst in the chat — the sender was left on read (no one ever replied)
+  // Only count if there are other members who could have replied
+  if (memberMap.size > 1) {
+    counts.set(burstSender, (counts.get(burstSender) ?? 0) + 1)
   }
 
   return Array.from(counts.entries())

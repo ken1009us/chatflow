@@ -109,6 +109,9 @@
     "conversationStarter": {
       "title": "話題を切り出した人"
     },
+    "leftOnRead": {
+      "title": "既読スルーされた回数"
+    },
     "tools": {
       "conversationIndex": "会話インデックス",
       "memberManagement": "メンバー管理",

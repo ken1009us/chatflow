@@ -21,6 +21,7 @@ import NightOwlCard from '@/components/analysis/NightOwlCard.vue'
 import CompatibilityCard from '@/components/analysis/CompatibilityCard.vue'
 import MediaChampionCard from '@/components/analysis/MediaChampionCard.vue'
 import ConversationStarterCard from '@/components/analysis/ConversationStarterCard.vue'
+import LeftOnReadCard from '@/components/analysis/LeftOnReadCard.vue'
 
 const { t, locale: i18nLocale } = useI18n()
 const router = useRouter()
@@ -192,6 +193,12 @@ onMounted(async () => {
         <NightOwlCard
           v-if="data.nightOwl?.length"
           :data="data.nightOwl"
+        />
+
+        <!-- Left on Read -->
+        <LeftOnReadCard
+          v-if="data.leftOnRead?.length"
+          :data="data.leftOnRead"
         />
 
         <!-- Compatibility -->

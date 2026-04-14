@@ -3,7 +3,7 @@ import type { ShareData, AnalysisResult } from '@/types'
 import type {
   MemberBreakdown, ExtraStats, MemberCatchphrases,
   ReplySpeedEntry, NightOwlEntry, CompatibilityPair,
-  MediaChampionEntry, MonthlyActivity, ConversationStarterEntry,
+  MediaChampionEntry, MonthlyActivity, ConversationStarterEntry, LeftOnReadEntry,
 } from '@/composables/useAnalysis'
 import { useSettingsStore } from '@/stores/settings'
 
@@ -18,6 +18,7 @@ export interface ShareExtras {
   mediaChampion?: MediaChampionEntry[]
   monthlyActivity?: MonthlyActivity[]
   conversationStarter?: ConversationStarterEntry[]
+  leftOnRead?: LeftOnReadEntry[]
 }
 
 export function useShare() {
@@ -47,6 +48,7 @@ export function useShare() {
       mediaChampion: extras?.mediaChampion?.slice(0, 10),
       monthlyActivity: extras?.monthlyActivity,
       conversationStarter: extras?.conversationStarter?.slice(0, 10),
+      leftOnRead: extras?.leftOnRead?.slice(0, 10),
     }
   }
 

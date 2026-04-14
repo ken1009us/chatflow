@@ -27,6 +27,7 @@ import NightOwlCard from '@/components/analysis/NightOwlCard.vue'
 import CompatibilityCard from '@/components/analysis/CompatibilityCard.vue'
 import MediaChampionCard from '@/components/analysis/MediaChampionCard.vue'
 import ConversationStarterCard from '@/components/analysis/ConversationStarterCard.vue'
+import LeftOnReadCard from '@/components/analysis/LeftOnReadCard.vue'
 import ToolsSection from '@/components/analysis/ToolsSection.vue'
 
 const { t } = useI18n()
@@ -39,7 +40,7 @@ const session = ref<Session | null>(null)
 const {
   result, extraStats, wordCloudStats, memberBreakdown, emojiRanking,
   catchphrases, replySpeed, nightOwl, compatibility, mediaChampion, monthlyActivity,
-  conversationStarter, analyzing, refiltering, analyze,
+  conversationStarter, leftOnRead, analyzing, refiltering, analyze,
 } = useAnalysis()
 const copied = ref(false)
 
@@ -96,6 +97,7 @@ async function handleShare() {
     mediaChampion: mediaChampion.value,
     monthlyActivity: monthlyActivity.value,
     conversationStarter: conversationStarter.value,
+    leftOnRead: leftOnRead.value,
   })
   if (ok) {
     copied.value = true
@@ -226,6 +228,12 @@ async function handleShare() {
             <NightOwlCard
               v-if="nightOwl.length"
               :data="nightOwl"
+            />
+
+            <!-- Left on Read -->
+            <LeftOnReadCard
+              v-if="leftOnRead.length"
+              :data="leftOnRead"
             />
 
             <!-- Compatibility -->

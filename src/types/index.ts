@@ -86,4 +86,5 @@ export interface ShareData {
   mediaChampion?: Array<{ name: string; stickerCount: number; imageCount: number }>
   monthlyActivity?: Array<{ month: string; count: number }>
   conversationStarter?: Array<{ name: string; count: number }>
+  leftOnRead?: Array<{ name: string; count: number }>
 }

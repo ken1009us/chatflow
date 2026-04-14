@@ -109,6 +109,9 @@
     "conversationStarter": {
       "title": "Conversation Starters"
     },
+    "leftOnRead": {
+      "title": "Left on Read"
+    },
     "tools": {
       "conversationIndex": "Conversation Index",
       "memberManagement": "Members",
