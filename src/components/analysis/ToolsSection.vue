@@ -104,7 +104,7 @@ function formatTime(d: Date) {
 <template>
   <div class="rounded-lg border border-gray-200 bg-white px-4 py-3 dark:border-gray-800 dark:bg-neutral-900">
     <div class="flex flex-wrap gap-2">
-      <BaseButton variant="secondary" size="sm" @click="router.push(`/upload?session=${sessionId}`)">
+      <BaseButton variant="secondary" size="sm" @click="router.push('/upload')">
         {{ t('analysis.tools.importMore') }}
       </BaseButton>
       <BaseButton variant="secondary" size="sm" @click="openSearch">

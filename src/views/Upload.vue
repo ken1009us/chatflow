@@ -15,6 +15,7 @@ const router = useRouter()
 const { parsing, progress, error, importFile } = useChat()
 
 const sessions = ref<Session[]>([])
+const deletingId = ref<number | null>(null)
 
 onMounted(loadSessions)
 
@@ -30,8 +31,13 @@ async function handleFile(file: File) {
 }
 
 async function handleDelete(id: number) {
-  await deleteSession(id)
-  await loadSessions()
+  deletingId.value = id
+  try {
+    await deleteSession(id)
+    await loadSessions()
+  } finally {
+    deletingId.value = null
+  }
 }
 
 function formatDate(date: Date): string {
@@ -78,8 +84,13 @@ function formatDate(date: Date): string {
               </p>
             </div>
             <div class="flex shrink-0 gap-2">
-              <BaseButton variant="ghost" size="sm" @click="handleDelete(session.id!)">
-                {{ t('upload.delete') }}
+              <BaseButton
+                variant="ghost"
+                size="sm"
+                :disabled="deletingId === session.id!"
+                @click="handleDelete(session.id!)"
+              >
+                {{ deletingId === session.id! ? t('common.loading') : t('upload.delete') }}
               </BaseButton>
               <BaseButton size="sm" @click="router.push(`/analysis/${session.id}`)">
                 {{ t('upload.analyze') }}

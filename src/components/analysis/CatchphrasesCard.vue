@@ -17,13 +17,24 @@ const TYPE_LABELS: Record<string, string> = {
   emoji: 'analysis.catchphrases.emoji',
 }
 
+const TYPE_ICONS: Record<string, string> = {
+  sticker: '🎨',
+  image: '📷',
+  emoji: '😊',
+}
+
 const top = computed(() => props.data.slice(0, 10))
 
 function displayWord(phrase: { word: string; type?: string }): string {
   if (phrase.type && TYPE_LABELS[phrase.type]) {
-    return t(TYPE_LABELS[phrase.type])
+    const icon = TYPE_ICONS[phrase.type] ?? ''
+    return `${icon} ${t(TYPE_LABELS[phrase.type])}`
   }
   return phrase.word
+}
+
+function isTypeItem(phrase: { type?: string }): boolean {
+  return !!phrase.type
 }
 </script>
 
@@ -43,7 +54,8 @@ function displayWord(phrase: { word: string; type?: string }): string {
             v-for="phrase in member.phrases"
             :key="phrase.word"
             class="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-medium"
-            :style="{
+            :class="isTypeItem(phrase) ? 'bg-gray-100 text-gray-500 border border-gray-200 dark:bg-neutral-800 dark:text-gray-400 dark:border-gray-700' : ''"
+            :style="isTypeItem(phrase) ? {} : {
               backgroundColor: CHART_COLORS[idx % CHART_COLORS.length] + '18',
               color: CHART_COLORS[idx % CHART_COLORS.length],
               border: `1px solid ${CHART_COLORS[idx % CHART_COLORS.length]}30`,
