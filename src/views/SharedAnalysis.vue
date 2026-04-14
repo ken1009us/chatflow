@@ -107,7 +107,7 @@ onMounted(async () => {
       />
 
       <!-- Fun Facts -->
-      <div v-if="data.extraStats" class="mt-6">
+      <div v-if="data.extraStats" class="mt-8">
         <FunFacts
           :result="{
             totalMessages: data.totalMessages,
@@ -124,7 +124,7 @@ onMounted(async () => {
         />
       </div>
 
-      <div class="mt-6 grid gap-6 lg:grid-cols-2">
+      <div class="mt-8 grid gap-8 lg:grid-cols-2">
         <!-- Activity Trend (full width) -->
         <ActivityTrendChart
           v-if="data.activityByDate.length"

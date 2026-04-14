@@ -145,20 +145,20 @@ async function handleShare() {
           <StatsSummary :result="result" />
 
           <!-- Fun Facts -->
-          <div v-if="extraStats" class="mt-6">
+          <div v-if="extraStats" class="mt-8">
             <FunFacts :result="result" :extra-stats="extraStats" />
           </div>
 
           <ToolsSection
             v-if="session?.id"
             :session-id="session.id"
-            class="mt-6"
+            class="mt-8"
             @members-updated="loadSession()"
           />
 
-          <FilterBar v-model="filter" class="mt-6" />
+          <FilterBar v-model="filter" class="mt-8" />
 
-          <div :class="['mt-6 grid gap-6 transition-opacity duration-200 lg:grid-cols-2', refiltering ? 'pointer-events-none opacity-40' : '']">
+          <div :class="['mt-8 grid gap-8 transition-opacity duration-200 lg:grid-cols-2', refiltering ? 'pointer-events-none opacity-40' : '']">
             <!-- Activity Trend (full width) -->
             <ActivityTrendChart
               v-if="result.activityByDate.length"
